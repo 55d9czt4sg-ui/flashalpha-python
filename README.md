@@ -260,7 +260,7 @@ except RateLimitError as e:
 | Plan | Daily Requests | Access |
 |------|---------------|--------|
 | **Free** | 5 | Stock quotes, single-expiry GEX (equities), key levels, BSM greeks, IV, IV surface, stock summary, historical quotes, tickers, options meta |
-| **Basic** | 100 | + DEX/VEX/CHEX by strike, max pain, ETF & index symbols (SPX, VIX, RUT, etc.) |
+| **Basic** | 250 | + DEX/VEX/CHEX by strike, max pain, ETF & index symbols (SPX, VIX, RUT, etc.) |
 | **Growth** | 2,500 | + Exposure summary, narrative, 0DTE analytics, volatility analytics, option quotes, full-chain GEX, Kelly sizing |
 | **Alpha** | Unlimited | + Advanced volatility (SVI, variance surfaces, arbitrage detection, greeks surfaces, variance swap) |
 

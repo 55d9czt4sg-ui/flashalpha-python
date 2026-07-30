@@ -208,7 +208,7 @@ Every authenticated response includes rate limit headers:
 | Plan | Daily Requests | Access |
 |------|---------------|--------|
 | Free | 5 | Stock quotes, gamma exposure by strike (GEX, levels), BSM greeks, IV solver, tickers, options meta, symbols, surface, stock summary (cached for unauthenticated, live for authenticated) |
-| Basic | 100 | Everything in Free + delta/vanna/charm exposure (DEX/VEX/CHEX) + index symbols + max pain analysis |
+| Basic | 250 | Everything in Free + delta/vanna/charm exposure (DEX/VEX/CHEX) + index symbols + max pain analysis |
 | Growth | 2,500 | + Exposure summary, narrative, history, 0DTE analytics, volatility analytics, option quotes, full-chain GEX (no expiry filter), Kelly sizing, **flow analytics** (`/v1/flow/levels`, `/pin-risk`, `/summary`, `/gex`, `/dex`, `/dealer-risk`) |
 | Alpha | Unlimited | + Advanced volatility (SVI, variance surfaces, arbitrage detection, greeks surfaces, var swap), VRP analytics (risk premium, z-score, percentile, directional VRP, term structure, GEX/vanna-conditioned regime, strategy suitability scores, dealer flow risk, macro context), SVI-smoothed IV on option quotes, **raw OI simulator state** (`/v1/flow/oi`), **flow bundle** (`/v1/flow/live`), **unusual-flow signal feed** (`/v1/flow/signals`), and raw option/stock flow data (`/v1/flow/options/*`, `/v1/flow/stocks/*`) |
 | Enterprise | Unlimited | Full access + admin endpoints |
