@@ -454,7 +454,7 @@ class VrpCore(TypedDict, total=False):
     # day window. ``+2.0`` means today's VRP is 2 standard deviations
     # richer than recent history → unusually rich, often a fade signal.
     # ``None`` on historical responses with insufficient warm-up
-    # (e.g. queries near 2018-04-16, the start of the dataset).
+    # (e.g. queries near 2017-01-03, the start of the dataset).
     z_score: Optional[float]
     # Percentile rank (0-100) of the current VRP within the trailing
     # window. ``100`` = highest VRP in living memory; ``0`` = lowest.
@@ -463,7 +463,7 @@ class VrpCore(TypedDict, total=False):
     # Number of trading days in the trailing percentile/z-score window.
     # When this is small (< ~30), treat ``z_score`` and ``percentile`` as
     # noise. Live API computes against ~252 days; historical scales with
-    # how far past 2018-04-16 the ``at`` timestamp is.
+    # how far past 2017-01-03 the ``at`` timestamp is.
     history_days: Optional[int]
 
 
