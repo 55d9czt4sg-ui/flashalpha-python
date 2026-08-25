@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.3.0 - 2026-08-25
+
+### Added
+- **`data_as_of` response envelope.** Every successful response now carries
+  `data_as_of`, reporting when each upstream feed last delivered to the node that
+  answered: equity and index spot, their option chains, futures and futures options,
+  the classified trade tape, settled open interest, and the macro series, each
+  reported separately because they arrive over different pipes and fail
+  independently. `endpoint_version` identifies the deployment that produced the
+  response.
+- **`DataAsOf`** exported as a `TypedDict` and added to every `*Response` type, so
+  the envelope has editor completion and type checking rather than being an untyped
+  passthrough. Responses are dicts at runtime, so this is additive: existing code is
+  unaffected.
+
+### Notes
+- Read each feed against its own cadence rather than against `as_of`. Settled open
+  interest dated to the previous session's close is correct, since it is published
+  once per session; an options feed an hour behind during the regular session is not.
+- A `null` means that node has not seen that feed, not that it is broken.
+- The field evidences that a feed delivered recently. It does not assert that every
+  contract in a chain is equally current.
+
+
 ## 1.1.0 - 2026-06-08
 
 ### Added

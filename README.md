@@ -31,6 +31,63 @@ for strike in gex["strikes"][:5]:
 
 Get your free API key at [flashalpha.com](https://flashalpha.com) — no credit card required.
 
+## Data provenance: `data_as_of`
+
+Every successful response carries `data_as_of`, reporting when each upstream feed last
+delivered to the node that answered, plus `endpoint_version` identifying the deployment
+that produced it.
+
+```python
+gex = fa.gex("SPY")
+
+print(gex["data_as_of"]["equity_options_feed"])  # 2026-08-25T18:48:58.204Z
+print(gex["data_as_of"]["oi_feed"])              # 2026-08-22T20:00:00.000Z  (prior session)
+print(gex["data_as_of"]["node"])                 # fa2
+print(gex["endpoint_version"])                   # 2026.08.25
+
+# Typed: DataAsOf is exported for annotation and editor completion.
+from flashalpha import DataAsOf
+stamps: DataAsOf = gex["data_as_of"]
+```
+
+| Field | Feed | Expected cadence |
+|---|---|---|
+| `node` | Which node answered | Nodes hydrate independently |
+| `equity_feed` | Equity and ETF spot quotes | seconds, during market hours |
+| `equity_options_feed` | Equity and ETF option quotes | seconds, during market hours |
+| `index_feed` | Index spot (SPX, NDX, RUT, VIX) | seconds, during market hours |
+| `index_options_feed` | Index option quotes | seconds, during market hours |
+| `futures_feed` | Futures prices | seconds, during the futures session |
+| `futures_options_feed` | Futures option quotes | seconds, during the futures session |
+| `flow_feed` | Classified options and stock trade tape | seconds, during market hours |
+| `oi_feed` | Settled open interest | daily, dated to the prior 16:00 ET close |
+| `macro_feed` | VIX, VVIX, SKEW, MOVE, SPX, Fear & Greed | minutes; reports its OLDEST component |
+
+### How to read it
+
+- **Check the feeds your call depends on.** A GEX call on an equity is answered from
+  `equity_feed`, `equity_options_feed` and `oi_feed`. `futures_feed` being `null` in that
+  response says nothing about the answer.
+- **Compare against the cadence, not the clock.** `oi_feed` at the previous session's
+  close is correct: settled open interest is published once per session, so on a Monday
+  the newest figure that exists is Friday's. An options feed an hour behind during the
+  regular session is not correct.
+- **`null` means "not seen on this node", not "broken".** A node that has never been
+  asked for a futures symbol has never opened that feed.
+- **Spot and options are separate on purpose.** They arrive over different pipes and can
+  fail independently.
+- **It evidences feed activity, not per-contract freshness.** An illiquid strike may not
+  have quoted for hours while its feed is healthy.
+- **`data_as_of` is not `as_of`.** `as_of` is response-generation time or the newest
+  contract in the payload, depending on the endpoint. `data_as_of` describes the feeds
+  behind it.
+
+Endpoints returning a bare JSON array carry the same information in the
+`X-Data-As-Of` and `X-Endpoint-Version` response headers.
+
+Full reference: <https://flashalpha.com/docs/lab-api-overview#response-envelope> and the
+methodology whitepaper at <https://flashalpha.com/methodology#freshness-reporting>.
+
 ## Features
 
 ### Live Options Screener

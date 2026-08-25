@@ -10,6 +10,7 @@ from .exceptions import (
     TierRestrictedError,
 )
 from .types import (
+    DataAsOf,
     ExposureSummaryExposures,
     ExposureSummaryHedgingEstimate,
     ExposureSummaryHedgingMove,
@@ -278,6 +279,7 @@ from .types import (
 
 __version__ = "1.2.3"
 __all__ = [
+    "DataAsOf",
     "FlashAlpha",
     "FlashAlphaError",
     "AuthenticationError",

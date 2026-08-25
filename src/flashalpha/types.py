@@ -16,6 +16,39 @@ unknown fields added by the API in future revisions will still pass through.
 from typing import Any, Dict, List, Literal, Optional, TypedDict
 
 
+class DataAsOf(TypedDict, total=False):
+    """When each upstream feed last delivered to the node that served the response.
+
+    Present on every successful response as ``data_as_of``. The shape is fixed:
+    every key appears on every endpoint, and a key is ``None`` when that node has
+    not received anything on that feed since it started.
+
+    Spot and options are reported separately because they arrive over different
+    pipes and fail independently - an index chain can be current while the index
+    level behind it is not.
+
+    Read each feed against its OWN cadence rather than against ``as_of``:
+    ``oi_feed`` dated to the previous session's close is correct, because settled
+    open interest is published once per session. ``equity_options_feed`` an hour
+    behind during the regular session is not.
+
+    A timestamp evidences that the feed delivered recently. It does not assert
+    that every contract in a chain is equally current: an illiquid strike may not
+    have quoted for hours while its feed is healthy.
+    """
+
+    node: str
+    equity_feed: Optional[str]
+    equity_options_feed: Optional[str]
+    index_feed: Optional[str]
+    index_options_feed: Optional[str]
+    futures_feed: Optional[str]
+    futures_options_feed: Optional[str]
+    flow_feed: Optional[str]
+    oi_feed: Optional[str]
+    macro_feed: Optional[str]
+
+
 class ZeroDteRegime(TypedDict, total=False):
     label: str
     description: str
@@ -230,6 +263,10 @@ class ZeroDteResponse(TypedDict, total=False):
 # on summary, but the actual response is lowercase — these typed models
 # reflect the live response, not the doc.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class ExposureSummaryExposures(TypedDict, total=False):
     """Net dealer Greek totals across the entire option chain.
@@ -418,6 +455,10 @@ class ExposureSummaryResponse(TypedDict, total=False):
 # strategy scores into separate sub-objects, at the cost of one extra
 # attribute lookup. Use the typed shape; the docstrings tell you exactly
 # where to look.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class VrpCore(TypedDict, total=False):
@@ -721,6 +762,10 @@ class VrpResponse(TypedDict, total=False):
 # overlays GEX-based dealer alignment, a multi-expiry calendar (full chain
 # only), and a 0-100 pin probability score.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class MaxPainDistance(TypedDict, total=False):
     """Distance from spot to the max-pain strike."""
@@ -924,6 +969,10 @@ class MaxPainResponse(TypedDict, total=False):
 #     (positive = buy, negative = sell) AND a ``direction`` label is also
 #     present.
 # Don't mix the two when porting code between endpoints.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class StockSummaryPrice(TypedDict, total=False):
@@ -1351,6 +1400,10 @@ class StockSummaryResponse(TypedDict, total=False):
 # surfaced verbatim into customer-facing chat / newsletters / reports.
 # Every string under ``narrative.*`` is editorially safe.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class NarrativeOiChange(TypedDict, total=False):
     """One row of the "top OI changes vs prior session" leaderboard.
@@ -1471,6 +1524,10 @@ class NarrativeResponse(TypedDict, total=False):
 # highest OI strike, 0DTE magnet) and don't need the full Greeks or the
 # narrative. Cheaper / smaller payload than ``/v1/exposure/summary``.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class ExposureLevels(TypedDict, total=False):
     """The seven canonical dealer-flow levels for a symbol."""
@@ -1531,6 +1588,10 @@ class ExposureLevelsResponse(TypedDict, total=False):
 # ``TypedDict("PricingAdditional", {"lambda": ..., "veta": ...})`` form
 # so the JSON name is preserved exactly. Read it as
 # ``response["additional"]["lambda"]``.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class PricingInputs(TypedDict, total=False):
@@ -1659,6 +1720,10 @@ class PricingGreeksResponse(TypedDict, total=False):
 # concentration, the multi-move dealer hedging table, and chain liquidity.
 #
 # Same shape on the live API and on the historical API with ``?at=``.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class VolatilityRealizedVol(TypedDict, total=False):
@@ -1936,6 +2001,10 @@ class VolatilityResponse(TypedDict, total=False):
 # arbitrage flags, variance-swap fair values, and the higher-order Greek
 # surfaces (vanna, charm, volga, speed). Same shape on live and historical.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class AdvVolSviParam(TypedDict, total=False):
     """One per-expiry row of fitted SVI (Stochastic Volatility Inspired)
@@ -2121,6 +2190,10 @@ class AdvVolatilityResponse(TypedDict, total=False):
 # Compact rectangular IV grid for plotting / interpolating against. Public
 # (no auth required on live; historical requires ``at=`` and an API key).
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class SurfaceResponse(TypedDict, total=False):
     """Implied-vol surface grid from ``GET /v1/surface/{symbol}``.
@@ -2164,6 +2237,10 @@ class SurfaceResponse(TypedDict, total=False):
 # Each one returns a thin response wrapper plus a per-strike row list. The
 # row schemas differ per Greek but share the same headline shape (strike +
 # call/put/net values). Same wire shape on live + historical.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class GexStrikeRow(TypedDict, total=False):
@@ -2213,6 +2290,10 @@ class GexResponse(TypedDict, total=False):
     # Per-strike rows. See ``GexStrikeRow``.
     strikes: List[GexStrikeRow]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class DexStrikeRow(TypedDict, total=False):
     """One per-strike row of the DEX breakdown."""
@@ -2236,6 +2317,10 @@ class DexResponse(TypedDict, total=False):
     # Net DEX across the chain (dollars).
     net_dex: Optional[float]
     strikes: List[DexStrikeRow]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class VexStrikeRow(TypedDict, total=False):
@@ -2264,6 +2349,10 @@ class VexResponse(TypedDict, total=False):
     # verbatim in customer-facing UIs.
     vex_interpretation: Optional[str]
     strikes: List[VexStrikeRow]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class ChexStrikeRow(TypedDict, total=False):
@@ -2304,6 +2393,10 @@ class ChexResponse(TypedDict, total=False):
 # uses ``/v1/optionquote`` and ``/v1/stockquote`` with ``?at=``). The wire
 # shape carries several camelCase field names — preserved here verbatim so
 # the typed dict matches the actual JSON keys (NOT pythonised).
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class OptionQuoteResponse(TypedDict, total=False):
@@ -2365,6 +2458,10 @@ class OptionQuoteResponse(TypedDict, total=False):
     # on the strict single-contract response.
     underlying: Optional[str]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class StockQuoteResponse(TypedDict, total=False):
     """Stock quote from ``GET /stockquote/{ticker}`` (live).
@@ -2391,6 +2488,10 @@ class StockQuoteResponse(TypedDict, total=False):
 #
 # Inverts the BSM pricer to recover implied volatility from a market price.
 # Echoes the requested inputs alongside the solved IV.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class PricingIvInputs(TypedDict, total=False):
@@ -2436,6 +2537,10 @@ class PricingIvResponse(TypedDict, total=False):
 # Computes the Kelly-optimal sizing fraction for a single option position
 # along with the supporting probability/return analysis. Returns three
 # nested blocks (inputs, sizing, analysis) and a free-form recommendation.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class PricingKellyInputs(TypedDict, total=False):
@@ -2523,6 +2628,10 @@ class PricingKellyResponse(TypedDict, total=False):
 #   - ``GET /v1/options/{t}``  — option-chain metadata (expirations + strikes)
 #   - ``GET /health``          — health check (public)
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class AccountResponse(TypedDict, total=False):
     """Account info & quota from ``GET /v1/account``.
@@ -2550,12 +2659,20 @@ class AccountResponse(TypedDict, total=False):
     # ISO timestamp at which ``usage_today`` resets to zero.
     resets_at: Optional[str]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class TickersResponse(TypedDict, total=False):
     """List of available stock tickers from ``GET /v1/tickers``."""
 
     tickers: List[str]
     count: Optional[int]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class SymbolsResponse(TypedDict, total=False):
@@ -2567,6 +2684,10 @@ class SymbolsResponse(TypedDict, total=False):
     note: Optional[str]
     # ISO timestamp of the last refresh of the symbol list.
     last_updated: Optional[str]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class OptionsMetaExpiration(TypedDict, total=False):
@@ -2593,6 +2714,10 @@ class OptionsMetaResponse(TypedDict, total=False):
     expiration_count: Optional[int]
     total_contracts: Optional[int]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class HealthResponse(TypedDict, total=False):
     """Public health-check response from ``GET /health``."""
@@ -2609,6 +2734,10 @@ class HealthResponse(TypedDict, total=False):
 # and ``formulas`` make the row shape user-controlled, so the canonical type
 # is ``List[Dict[str, Any]]``. Read row fields with ordinary dict access;
 # the meta block tells you ``returned_count`` / ``total_count`` / ``tier``.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class ScreenerMeta(TypedDict, total=False):
@@ -2672,6 +2801,10 @@ class ScreenerResponse(TypedDict, total=False):
 # settled ``/v1/exposure/gex``/``/dex`` endpoints, so they reuse
 # ``GexStrikeRow`` / ``DexStrikeRow`` rather than duplicating the schema.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowLevelsResponse(TypedDict, total=False):
     """Live key levels from ``GET /v1/flow/levels/{symbol}``.
@@ -2696,6 +2829,10 @@ class FlowLevelsResponse(TypedDict, total=False):
     live_put_wall: Optional[float]
     # Live max-pain strike (where the most option value expires worthless).
     live_max_pain: Optional[float]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowPinRiskBreakdown(TypedDict, total=False):
@@ -2734,6 +2871,10 @@ class FlowPinRiskResponse(TypedDict, total=False):
     time_to_close_hours: Optional[float]
     breakdown: FlowPinRiskBreakdown
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowSummaryResponse(TypedDict, total=False):
     """At-a-glance flow direction from ``GET /v1/flow/summary/{symbol}``.
@@ -2760,6 +2901,10 @@ class FlowSummaryResponse(TypedDict, total=False):
     # % shift in net GEX caused by today's flow vs the settled book.
     # ``None`` when the settled baseline is zero (undefined ratio).
     flow_gex_pct_shift: Optional[float]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowOiResponse(TypedDict, total=False):
@@ -2791,6 +2936,10 @@ class FlowOiResponse(TypedDict, total=False):
     # Contracts that have printed at least one trade today.
     contracts_with_flow: int
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowGexResponse(TypedDict, total=False):
     """Live per-strike GEX from ``GET /v1/flow/gex/{symbol}``.
@@ -2813,6 +2962,10 @@ class FlowGexResponse(TypedDict, total=False):
     # Per-strike rows (identical schema to settled GEX). See ``GexStrikeRow``.
     strikes: List[GexStrikeRow]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowDexResponse(TypedDict, total=False):
     """Live per-strike DEX from ``GET /v1/flow/dex/{symbol}``.
@@ -2828,6 +2981,10 @@ class FlowDexResponse(TypedDict, total=False):
     # Live net DEX across the chain (dollars).
     live_net_dex: Optional[float]
     strikes: List[DexStrikeRow]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowDealerRiskResponse(TypedDict, total=False):
@@ -2867,6 +3024,10 @@ class FlowDealerRiskResponse(TypedDict, total=False):
     # Plain-English summary of whether flow has materially moved the
     # dealer book — safe to surface verbatim.
     description: str
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowAdjustedDealerRisk(TypedDict, total=False):
@@ -2950,6 +3111,10 @@ class FlowLiveResponse(TypedDict, total=False):
 
 # ── Raw flow data (camelCase wire keys, proxied from the ingest tier) ────────
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowOptionTrade(TypedDict, total=False):
     """A single option trade print (``trades[]`` element)."""
@@ -2998,6 +3163,10 @@ class FlowOptionRecentResponse(TypedDict, total=False):
     # Newest-first list of trade prints.
     trades: List[FlowOptionTrade]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowOptionSummaryResponse(TypedDict, total=False):
     """Per-underlying option-flow aggregates from
@@ -3024,6 +3193,10 @@ class FlowOptionSummaryResponse(TypedDict, total=False):
     biggestSingleTrade: int
     # Timestamp of the most recent print; ``None``/absent when no trades.
     lastTradeUtc: Optional[str]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowOptionBlock(TypedDict, total=False):
@@ -3061,6 +3234,10 @@ class FlowOptionBlocksResponse(TypedDict, total=False):
     count: int
     # Newest-first list of large prints.
     blocks: List[FlowOptionBlock]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowOptionHistoryBucket(TypedDict, total=False):
@@ -3105,6 +3282,10 @@ class FlowOptionHistoryResponse(TypedDict, total=False):
     # Newest-first list of per-minute aggregates.
     buckets: List[FlowOptionHistoryBucket]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowCumulativePoint(TypedDict, total=False):
     """One point of a cumulative net-flow series (``points[]`` element).
@@ -3141,6 +3322,10 @@ class FlowOptionCumulativeResponse(TypedDict, total=False):
     # Chronological cumulative net-flow series.
     points: List[FlowCumulativePoint]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowStockTrade(TypedDict, total=False):
     """A single stock trade print (``trades[]`` element)."""
@@ -3176,6 +3361,10 @@ class FlowStockRecentResponse(TypedDict, total=False):
     # Newest-first list of trade prints.
     trades: List[FlowStockTrade]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowStockSummaryResponse(TypedDict, total=False):
     """Per-symbol stock-flow aggregates from
@@ -3198,6 +3387,10 @@ class FlowStockSummaryResponse(TypedDict, total=False):
     biggestSingleTrade: int
     # Timestamp of the most recent print; absent when no trades.
     lastTradeUtc: Optional[str]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowStockBlock(TypedDict, total=False):
@@ -3231,6 +3424,10 @@ class FlowStockBlocksResponse(TypedDict, total=False):
     count: int
     # Newest-first list of large prints.
     blocks: List[FlowStockBlock]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowStockHistoryBucket(TypedDict, total=False):
@@ -3281,6 +3478,10 @@ class FlowStockHistoryResponse(TypedDict, total=False):
     # Newest-first list of per-minute aggregates.
     buckets: List[FlowStockHistoryBucket]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowStockCumulativeResponse(TypedDict, total=False):
     """Cumulative stock net-flow series from
@@ -3295,6 +3496,10 @@ class FlowStockCumulativeResponse(TypedDict, total=False):
     count: int
     # Chronological cumulative net-flow series.
     points: List[FlowCumulativePoint]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowOptionLeaderRow(TypedDict, total=False):
@@ -3340,6 +3545,10 @@ class FlowOptionLeaderboardResponse(TypedDict, total=False):
     buyers: List[FlowOptionLeaderRow]
     # Top net-dollar sellers.
     sellers: List[FlowOptionLeaderRow]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowOutlierRow(TypedDict, total=False):
@@ -3397,6 +3606,10 @@ class FlowOptionOutliersResponse(TypedDict, total=False):
     # Imbalance-ranked flagged underlyings.
     outliers: List[FlowOutlierRow]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowStockLeaderRow(TypedDict, total=False):
     """One ranked symbol in the stock-flow leaderboard.
@@ -3439,6 +3652,10 @@ class FlowStockLeaderboardResponse(TypedDict, total=False):
     # Top net-dollar sellers.
     sellers: List[FlowStockLeaderRow]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowStockOutliersResponse(TypedDict, total=False):
     """Cross-symbol stock-flow outliers from
@@ -3463,6 +3680,10 @@ class FlowStockOutliersResponse(TypedDict, total=False):
 #
 # Per-underlying scored/classified unusual-flow signals. Snake_case wire
 # shape (analytics family). Both endpoints reuse ``FlowSignal``.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowSignalsChain(TypedDict, total=False):
@@ -3600,6 +3821,10 @@ class FlowSignalsResponse(TypedDict, total=False):
     # Signals, highest score first.
     signals: List[FlowSignal]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowSignalsSummaryResponse(TypedDict, total=False):
     """Net-directional roll-up from
@@ -3644,6 +3869,10 @@ class FlowSignalsSummaryResponse(TypedDict, total=False):
 # change between strategies. ``metrics`` is a free-form ``Dict[str, Any]``
 # (the keys documented per-endpoint differ; ``underlying_price`` is always
 # present), so one ``StrategyDecisionResponse`` covers all ten named methods.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class StrategyLeg(TypedDict, total=False):
@@ -3761,6 +3990,10 @@ class StrategyDecisionResponse(TypedDict, total=False):
 # analytics derived from the upcoming/historical earnings calendar plus live
 # options term structure.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class EarningsCalendarEvent(TypedDict, total=False):
     """One upcoming earnings event row (``events[]`` of the calendar)."""
@@ -3790,6 +4023,10 @@ class EarningsCalendarResponse(TypedDict, total=False):
 
     events: List[EarningsCalendarEvent]
     count: Optional[int]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class EarningsExpectedMoveBlock(TypedDict, total=False):
@@ -3828,6 +4065,10 @@ class EarningsExpectedMoveResponse(TypedDict, total=False):
     # ``None`` when the decomposition can't be resolved.
     expected_move: Optional[EarningsExpectedMoveBlock]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class EarningsHistoryRow(TypedDict, total=False):
     """One past earnings event (``history[]``)."""
@@ -3860,6 +4101,10 @@ class EarningsHistoryResponse(TypedDict, total=False):
     symbol: str
     count: Optional[int]
     history: List[EarningsHistoryRow]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class EarningsIvCrushCurrent(TypedDict, total=False):
@@ -3899,6 +4144,10 @@ class EarningsIvCrushResponse(TypedDict, total=False):
     # ``None`` when no upcoming event / term structure unresolvable.
     current_estimate: Optional[EarningsIvCrushCurrent]
     distribution: EarningsIvCrushDistribution
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class EarningsVrpBlock(TypedDict, total=False):
@@ -3946,6 +4195,10 @@ class EarningsVrpResponse(TypedDict, total=False):
     earnings_vrp: EarningsVrpBlock
     surprise_reaction: EarningsSurpriseReaction
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class EarningsDealerLevels(TypedDict, total=False):
     """Dealer levels scoped to the event-week expiries."""
@@ -3992,6 +4245,10 @@ class EarningsDealerPositioningResponse(TypedDict, total=False):
     # ``"positive_gamma"`` / ``"negative_gamma"`` / ``"undetermined"``.
     regime: Optional[str]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class EarningsStrategyScores(TypedDict, total=False):
     """0-100 suitability scores per earnings structure."""
@@ -4023,6 +4280,10 @@ class EarningsStrategiesResponse(TypedDict, total=False):
     earnings_date: Optional[str]
     scores: EarningsStrategyScores
     context: EarningsStrategyContext
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class EarningsScreenerEvent(TypedDict, total=False):
@@ -4063,6 +4324,10 @@ class EarningsScreenerResponse(TypedDict, total=False):
 # keys for pnl, plus ``expiry``/``impliedVol`` (camelCase on the wire) for
 # greeks.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class StructurePnlLeg(TypedDict, total=False):
     """One leg of a P&L structure request.
@@ -4100,6 +4365,10 @@ class StructurePnlResponse(TypedDict, total=False):
     breakevens: List[float]
     max_profit: Optional[float]
     max_loss: Optional[float]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class StructureGreeksLeg(TypedDict, total=False):
@@ -4154,6 +4423,10 @@ class StructureGreeksResponse(TypedDict, total=False):
 # subset of the advanced-volatility payload — just the per-expiry SVI params.
 # Reuses ``AdvVolSviParam`` for the per-slice rows.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class SurfaceSviResponse(TypedDict, total=False):
     """Live SVI-fitted surface from ``GET /v1/surface/svi/{symbol}`` (Alpha+).
@@ -4178,6 +4451,10 @@ class SurfaceSviResponse(TypedDict, total=False):
 # inside ``expected_moves`` use camelCase keys (``daysToExpiry``, ``atmIv``,
 # ``expectedMove``, ``expectedMovePct``, ``lowerBound``, ``upperBound``) even
 # though the top-level keys are snake_case.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class ExpectedMoveItem(TypedDict, total=False):
@@ -4215,6 +4492,10 @@ class ExpectedMoveResponse(TypedDict, total=False):
 # Typed model for ``GET /v1/exposure/sheet/{symbol}`` (Growth+). Unified
 # per-strike GEX/DEX/VEX/CHEX/DAG rowset + chain totals, Line-in-the-Sand
 # inflection strike, all gamma peaks, and OPEX / triple-witching flags.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class ExposureSheetTotals(TypedDict, total=False):
@@ -4299,6 +4580,10 @@ class ExposureSheetResponse(TypedDict, total=False):
 # Typed model for ``GET /v1/exposure/term-structure/{symbol}`` (Growth+).
 # Per-greek exposure aggregated by DTE bucket and rolled up per expiry.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class ExposureTermDteBucket(TypedDict, total=False):
     """One DTE bucket (``0-7d`` / ``8-30d`` / ``31-60d`` / ``61-180d`` /
@@ -4347,6 +4632,10 @@ class ExposureTermStructureResponse(TypedDict, total=False):
 # Typed model for ``GET /v1/exposure/basket`` (Growth+). Weighted cross-symbol
 # aggregate of GEX/DEX/VEX/CHEX across up to 50 user-supplied symbols.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class ExposureBasketAggregate(TypedDict, total=False):
     """``Σ wᵢ × net_{greek}_i`` after weight renormalisation."""
@@ -4394,6 +4683,10 @@ class ExposureBasketResponse(TypedDict, total=False):
 # Typed model for ``GET /v1/exposure/oi-diff/{symbol}`` (Growth+). Day-over-day
 # open-interest deltas — fills the ``top_oi_changes`` placeholder on narrative.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class ExposureOiDiffRow(TypedDict, total=False):
     """One per-contract OI delta row (sorted by ``|oi_change|`` descending)."""
@@ -4429,6 +4722,10 @@ class ExposureOiDiffResponse(TypedDict, total=False):
 #
 # Typed model for ``GET /v1/liquidity/{symbol}`` (Growth+). Per-expiry
 # execution score, spreads, ATM OI depth + chain-level roll-up.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class LiquidityExpiry(TypedDict, total=False):
@@ -4469,6 +4766,10 @@ class LiquidityResponse(TypedDict, total=False):
 # Typed model for ``GET /v1/volatility/skew-term/{symbol}`` (Growth+). Skew
 # term structure with vol-desk naming conventions (skew/risk-reversal/butterfly).
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class SkewTermExpiry(TypedDict, total=False):
     """One per-expiry skew row with the named conventions."""
@@ -4505,6 +4806,10 @@ class SkewTermResponse(TypedDict, total=False):
 #
 # Typed model for ``GET /v1/volatility/spot-vol-correlation/{symbol}`` (Growth+).
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class SpotVolCorrelationResponse(TypedDict, total=False):
     """Spot-vol correlation from
@@ -4530,6 +4835,10 @@ class SpotVolCorrelationResponse(TypedDict, total=False):
 #
 # Typed model for ``GET /v1/volatility/realized/{symbol}`` (Alpha+). Range-based
 # realized (historical) vol estimators over 10/20/30-day windows.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class RealizedVolatilityEstimator(TypedDict, total=False):
@@ -4571,6 +4880,10 @@ class RealizedVolatilityResponse(TypedDict, total=False):
 #
 # Typed model for ``GET /v1/volatility/forecast/{symbol}`` (Alpha+). Conditional
 # vol forecasts via EWMA (λ=0.94), HAR-RV and GARCH(1,1) MLE.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class VolatilityForecastEwma(TypedDict, total=False):
@@ -4650,6 +4963,10 @@ class VolatilityForecastResponse(TypedDict, total=False):
 # Typed model for ``GET /v1/dispersion`` (Alpha+). Implied vs realized
 # correlation between an index and a user-supplied basket of constituents.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class DispersionContributor(TypedDict, total=False):
     """One constituent's contribution to basket vol (sorted descending)."""
@@ -4693,6 +5010,10 @@ class DispersionResponse(TypedDict, total=False):
 # Typed model for ``GET /v1/macro/vix-state`` (Growth+). "overvixing /
 # undervixing" regime — VIX vs SPX 20-day realized vol.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class VixStateResponse(TypedDict, total=False):
     """VIX-state regime from ``GET /v1/macro/vix-state`` (Growth+)."""
@@ -4716,6 +5037,10 @@ class VixStateResponse(TypedDict, total=False):
 #
 # Typed model for ``GET /v1/universe`` (public). Curated tier-1 / tier-2
 # symbol directory the screener loop keeps pre-warmed.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class UniverseSymbol(TypedDict, total=False):
@@ -4747,6 +5072,10 @@ class UniverseResponse(TypedDict, total=False):
 # Typed model for ``GET /v1/flow/options/{symbol}/dealer-premium`` (Alpha+).
 # Full-tape Net Dealer Premium roll-up over a configurable window.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowDealerPremiumResponse(TypedDict, total=False):
     """Net Dealer Premium from
@@ -4776,6 +5105,10 @@ class FlowDealerPremiumResponse(TypedDict, total=False):
 # snapshot reuses the full ``ZeroDteResponse`` fields plus a ``flow_direction``
 # block; the series/hedge-flow/heatmap/strike-flow endpoints are intraday
 # time-series wrappers with empty-``bars`` degraded shapes.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class ZeroDteFlowDirection(TypedDict, total=False):
@@ -4829,6 +5162,10 @@ class FlowZeroDteSnapshotResponse(TypedDict, total=False):
     next_zero_dte_expiry: Optional[str]
     message: str
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowZeroDteSeriesBar(TypedDict, total=False):
     """One downsampled bar of the 0DTE series."""
@@ -4868,6 +5205,10 @@ class FlowZeroDteSeriesResponse(TypedDict, total=False):
     bar_size: Optional[str]
     bars: List[FlowZeroDteSeriesBar]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowZeroDteHedgeFlowBar(TypedDict, total=False):
     """One bar of the 0DTE hedge-flow series."""
@@ -4891,6 +5232,10 @@ class FlowZeroDteHedgeFlowResponse(TypedDict, total=False):
     side: Optional[str]
     bar_size: Optional[str]
     bars: List[FlowZeroDteHedgeFlowBar]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowZeroDteHeatmapBar(TypedDict, total=False):
@@ -4927,6 +5272,10 @@ class FlowZeroDteHeatmapResponse(TypedDict, total=False):
     # Reserved for sampler-gap intervals; not yet populated.
     gap_intervals: List[Any]
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class FlowZeroDteStrikeFlowBar(TypedDict, total=False):
     """One bar of per-strike signed aggressor flow (arrays index-aligned to
@@ -4955,6 +5304,10 @@ class FlowZeroDteStrikeFlowResponse(TypedDict, total=False):
     strikes_grid: List[float]
     bars: List[FlowZeroDteStrikeFlowBar]
     gap_intervals: List[Any]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowZeroDteLeaderboardEntry(TypedDict, total=False):
@@ -4987,6 +5340,10 @@ class FlowZeroDteLeaderboardResponse(TypedDict, total=False):
 #
 # Typed model for ``GET /v1/flow/stocks/{symbol}/bars`` (Alpha+).
 # Multi-resolution OHLCV+flow bars, oldest-first, camelCase wire keys.
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
 
 
 class FlowStockBar(TypedDict, total=False):
@@ -5031,6 +5388,10 @@ class FlowStockBarsResponse(TypedDict, total=False):
 # Typed model for ``GET /v1/vrp/{symbol}/history`` (Alpha+). Daily VRP time
 # series for charting and backtesting.
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class VrpHistoryRow(TypedDict, total=False):
     """One daily VRP snapshot row."""
@@ -5066,6 +5427,10 @@ class VrpHistoryResponse(TypedDict, total=False):
 #
 # Typed model for ``GET /v1/screener/fields`` (any authenticated tier).
 
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
+
 
 class ScreenerField(TypedDict, total=False):
     """One queryable screener field with its value type."""
@@ -5084,3 +5449,7 @@ class ScreenerFieldsResponse(TypedDict, total=False):
 
     fields: List[ScreenerField]
     count: Optional[int]
+
+    # Response envelope, present on every successful response.
+    endpoint_version: str
+    data_as_of: DataAsOf
