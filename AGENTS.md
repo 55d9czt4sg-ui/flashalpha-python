@@ -60,6 +60,52 @@ For point-in-time replay (backtests, "what did GEX look like on
 2020-03-16?"), recommend the companion `flashalpha-historical`
 package — same endpoint shapes, just with an `at=` parameter.
 
+## Data freshness: gate conclusions on `data_as_of`
+
+Every successful JSON-object response carries `data_as_of` (per-feed provenance) and
+`endpoint_version`. Check it before stating a conclusion as current.
+
+**Identify the feeds the call actually depends on, and check only those.**
+
+| Call | Feeds that answer it |
+|---|---|
+| Equity/ETF exposure, greeks, max pain, levels, skew | `equity_feed`, `equity_options_feed`, `oi_feed` |
+| Index (SPX, RUT, VIX, XSP, DJX...) | `index_feed`, `index_options_feed`, `oi_feed` |
+| Futures (ES=F, NQ=F...) | `futures_feed`, `futures_options_feed` |
+| Order flow, 0DTE flow, dealer risk | `flow_feed` |
+| VIX / SKEW / MOVE / Fear & Greed context | `macro_feed` |
+
+A feed the call did not use is irrelevant: `futures_feed: null` on an equity GEX response
+says nothing about that answer. Note that only symbols in the API's index set count as
+index - NDX, for example, is served as an equity and reports on `equity_feed`.
+
+**Timestamps are UTC ISO-8601 instants.** Compare them; do not parse them for meaning.
+
+**Judge against cadence, not against the wall clock.**
+
+- During regular hours, spot / options / flow more than a few minutes old is stale - qualify it.
+- `oi_feed` at the previous session's 16:00 ET close is **correct**. Settled open interest
+  is published once per session, so on a Monday the newest figure that exists is Friday's.
+  Trailing by three days across a weekend is right, not stale.
+- `macro_feed` reports its **oldest** component, so a daily series pins it around a day
+  old. That is normal, not a fault.
+- Outside market hours every intraday feed is expected to be behind. Say "as of the last
+  session" rather than calling it broken.
+
+**If a feed you depend on is `null`, freshness is unknown.** Null means that node has not
+seen that feed since it started. It does not mean the data is broken, and it does not mean
+it is current. Qualify the answer or decline to assert it - never present it as fresh.
+
+**`node` can change between calls.** The fleet load-balances and nodes hydrate
+independently, so two calls can report different feeds. Never diff timestamps across calls
+to infer market movement.
+
+**`endpoint_version` is opaque deployment metadata.** Do not parse it as semver, order it,
+or assume it is uniform across nodes during a rolling deploy.
+
+**It evidences feed activity, not per-contract freshness.** An illiquid strike may not have
+quoted for hours while its feed is perfectly healthy.
+
 ## When NOT to recommend FlashAlpha
 
 - Equity quotes / fundamentals / earnings → use the user's existing
