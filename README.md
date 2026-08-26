@@ -33,15 +33,16 @@ Get your free API key at [flashalpha.com](https://flashalpha.com) — no credit 
 
 ## Data provenance: `data_as_of`
 
-Every successful response carries `data_as_of`, reporting when each upstream feed last
-delivered to the node that answered, plus `endpoint_version` identifying the deployment
-that produced it.
+Every successful JSON-object response carries `data_as_of`, reporting when each upstream
+feed last delivered to the node that answered, plus `endpoint_version` identifying the
+deployment that produced it. That is every method on this client except the handful that
+return a bare JSON array - see the note at the end of this section.
 
 ```python
 gex = fa.gex("SPY")
 
 print(gex["data_as_of"]["equity_options_feed"])  # 2026-08-25T18:48:58.204Z
-print(gex["data_as_of"]["oi_feed"])              # 2026-08-22T20:00:00.000Z  (prior session)
+print(gex["data_as_of"]["oi_feed"])              # 2026-08-24T20:00:00.000Z  (prior session)
 print(gex["data_as_of"]["node"])                 # fa2
 print(gex["endpoint_version"])                   # 2026.08.25
 
@@ -82,8 +83,13 @@ stamps: DataAsOf = gex["data_as_of"]
   contract in the payload, depending on the endpoint. `data_as_of` describes the feeds
   behind it.
 
-Endpoints returning a bare JSON array carry the same information in the
-`X-Data-As-Of` and `X-Endpoint-Version` response headers.
+### Bare-array endpoints
+
+A few endpoints return a bare JSON array, which has nowhere to put an envelope in the
+body. The API sends the same information in the `X-Data-As-Of` and `X-Endpoint-Version`
+response headers instead - but this client returns the parsed body only and does not
+surface response headers, so the envelope is **not reachable through those methods**.
+Call the HTTP endpoint directly if you need provenance for one of them.
 
 Full reference: <https://flashalpha.com/docs/lab-api-overview#response-envelope> and the
 methodology whitepaper at <https://flashalpha.com/methodology#freshness-reporting>.
