@@ -127,7 +127,8 @@ summary = client.stock_summary("SPY")
 
 # Or a focused exposure snapshot.
 exp = client.exposure_summary("SPY")
-print(exp["gamma_flip"], exp["regime"], exp["exposures"]["net_gex"])
+# gamma_flip is None unless gamma_flip_status == "available".
+print(exp["gamma_flip"], exp["gamma_flip_status"], exp["regime"])
 ```
 
 ## Typed responses
@@ -144,6 +145,18 @@ silent-null traps:
   MAGNITUDE on this endpoint (the `direction` field carries the
   sign). On `zero_dte` the same field is signed. Don't copy code
   between the two without re-checking signs.
+- `gamma_flip` (every exposure/flow endpoint): nullable, and `null`
+  for the MAJORITY of chains. The sibling `gamma_flip_status` says why
+  — `"available"` means a level was published, anything else is a
+  reason code (`no_boundary`, `insufficient_local_coverage`,
+  `insufficient_quote_quality`, `sensitive_root`, `uncertain_root_path`,
+  `stored_sign_mismatch`, `search_budget`, `quality_budget`) and
+  `regime` degrades to `"unknown"`. NEVER generate code that formats
+  `gamma_flip` as a number without a null check — `f"{flip:.2f}"`
+  raises `TypeError` on `NoneType.__format__`. Treat unrecognised
+  status values as unavailable. On the flow endpoints the value field
+  is `live_gamma_flip` but the status is still named plain
+  `gamma_flip_status`.
 - `pricing/greeks` response: `additional.lambda` collides with the
   Python `lambda` keyword — the typed model uses the functional
   `TypedDict` constructor so the JSON name is preserved. Read it as

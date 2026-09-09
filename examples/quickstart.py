@@ -2,13 +2,27 @@
 
 from flashalpha import FlashAlpha
 
+
+def flip(payload):
+    """Format ``gamma_flip``, which is ``None`` for most chains.
+
+    When no level is published the API returns ``gamma_flip: null`` and a
+    ``gamma_flip_status`` reason code (e.g. ``"no_boundary"``). Anything
+    other than ``"available"`` means there is no flip to show.
+    """
+    level = payload.get("gamma_flip")
+    if level is None:
+        return f"n/a ({payload.get('gamma_flip_status') or 'unavailable'})"
+    return f"{level:.2f}"
+
+
 # 1. Initialize with your API key
 fa = FlashAlpha("YOUR_API_KEY")
 
 # 2. Get gamma exposure for SPY
 gex = fa.gex("SPY")
 print(f"SPY Net GEX: ${gex['net_gex']:,.0f}")
-print(f"Gamma flip: {gex['gamma_flip']:.2f}")
+print(f"Gamma flip: {flip(gex)}")
 print(f"Regime: {gex['net_gex_label']}")
 print()
 
@@ -16,7 +30,7 @@ print()
 levels = fa.exposure_levels("SPY")["levels"]
 print(f"Call wall (resistance): {levels['call_wall']}")
 print(f"Put wall (support):     {levels['put_wall']}")
-print(f"Gamma flip:             {levels['gamma_flip']:.2f}")
+print(f"Gamma flip:             {flip(levels)}")
 print(f"0DTE magnet:            {levels['zero_dte_magnet']}")
 print()
 

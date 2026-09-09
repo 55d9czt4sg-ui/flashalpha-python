@@ -212,7 +212,21 @@ from flashalpha import StockSummaryResponse, ExposureSummaryResponse
 
 summary: StockSummaryResponse = client.stock_summary("SPY")
 gamma_flip = summary["exposure"]["gamma_flip"]  # autocompleted
+
+# gamma_flip is None for most chains; the sibling status says why.
+# Never format it as a number without checking.
+if summary["exposure"]["gamma_flip_status"] != "available":
+    ...  # no level published; regime is "unknown"
 ```
+
+Nullability note: `gamma_flip` (and `live_gamma_flip` on the flow
+endpoints) is only populated when the level is well-determined, which is
+a minority of chains. Otherwise it is `null`, `regime` is `"unknown"`,
+and `gamma_flip_status` carries a reason code (`no_boundary`,
+`insufficient_local_coverage`, `insufficient_quote_quality`,
+`sensitive_root`, `uncertain_root_path`, `stored_sign_mismatch`,
+`search_budget`, `quality_budget`). Only `"available"` guarantees a
+number; treat any other value as no level published.
 
 ## Tier breakdown
 

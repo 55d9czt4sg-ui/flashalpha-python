@@ -53,6 +53,7 @@ class ZeroDteRegime(TypedDict, total=False):
     label: str
     description: str
     gamma_flip: Optional[float]
+    gamma_flip_status: Optional[str]
     spot_vs_flip: Literal["above", "below"]
     spot_to_flip_pct: Optional[float]
     distance_to_flip_dollars: Optional[float]
@@ -420,6 +421,15 @@ class ExposureSummaryResponse(TypedDict, total=False):
     # following likely). One of the two or three numbers most experienced
     # users actually look at on this endpoint.
     gamma_flip: Optional[float]
+    # Why ``gamma_flip`` is or isn't published. ``"available"`` when a
+    # level is returned; otherwise a reason code for the withholding:
+    # ``"no_boundary"``, ``"stored_sign_mismatch"``,
+    # ``"insufficient_local_coverage"``, ``"insufficient_quote_quality"``,
+    # ``"sensitive_root"``, ``"uncertain_root_path"``, ``"search_budget"``,
+    # ``"quality_budget"``. New codes may be added server-side, so treat
+    # ANY value other than ``"available"`` as "no flip published" -- in
+    # that case ``gamma_flip`` is ``None`` and ``regime`` is ``"unknown"``.
+    gamma_flip_status: Optional[str]
     # Dealer-positioning regime classification:
     #   - ``"positive_gamma"``: spot above gamma_flip
     #   - ``"negative_gamma"``: spot below gamma_flip
@@ -615,6 +625,10 @@ class VrpRegime(TypedDict, total=False):
     # Strike where net dealer gamma crosses zero. Same as
     # exposure_summary.gamma_flip.
     gamma_flip: Optional[float]
+    # Why ``gamma_flip`` is or isn't published -- ``"available"``, else a
+    # reason code. Same values as ``ExposureSummaryResponse.gamma_flip_status``;
+    # treat anything other than ``"available"`` as no flip published.
+    gamma_flip_status: Optional[str]
 
 
 class VrpStrategyScores(TypedDict, total=False):
@@ -863,6 +877,10 @@ class MaxPainDealerAlignment(TypedDict, total=False):
     # Strike where net dealer gamma crosses zero. Same definition as
     # ``exposure_summary.gamma_flip``.
     gamma_flip: Optional[float]
+    # Why ``gamma_flip`` is or isn't published -- ``"available"``, else a
+    # reason code. Same values as ``ExposureSummaryResponse.gamma_flip_status``;
+    # treat anything other than ``"available"`` as no flip published.
+    gamma_flip_status: Optional[str]
     # Strike with highest absolute call GEX (dealer-side resistance).
     call_wall: Optional[float]
     # Strike with highest absolute put GEX (dealer-side support).
@@ -1194,6 +1212,10 @@ class StockSummaryExposure(TypedDict, total=False):
     # gamma regime (mean-reverting); spot BELOW = negative-gamma
     # (trend-following).
     gamma_flip: Optional[float]
+    # Why ``gamma_flip`` is or isn't published -- ``"available"``, else a
+    # reason code. Same values as ``ExposureSummaryResponse.gamma_flip_status``;
+    # treat anything other than ``"available"`` as no flip published.
+    gamma_flip_status: Optional[str]
     # Strike with highest absolute call GEX (dealer-side resistance).
     call_wall: Optional[float]
     # Strike with highest absolute put GEX (dealer-side support).
@@ -1446,6 +1468,10 @@ class NarrativeData(TypedDict, total=False):
     vix: Optional[float]
     # Strike where net dealer gamma crosses zero.
     gamma_flip: Optional[float]
+    # Why ``gamma_flip`` is or isn't published -- ``"available"``, else a
+    # reason code. Same values as ``ExposureSummaryResponse.gamma_flip_status``;
+    # treat anything other than ``"available"`` as no flip published.
+    gamma_flip_status: Optional[str]
     # Strike with the highest absolute call GEX (dealer-side resistance).
     call_wall: Optional[float]
     # Strike with the highest absolute put GEX (dealer-side support).
@@ -1535,6 +1561,10 @@ class ExposureLevels(TypedDict, total=False):
     # Strike where net dealer gamma crosses zero. Spot above = positive-
     # gamma regime; spot below = negative-gamma.
     gamma_flip: Optional[float]
+    # Why ``gamma_flip`` is or isn't published -- ``"available"``, else a
+    # reason code. Same values as ``ExposureSummaryResponse.gamma_flip_status``;
+    # treat anything other than ``"available"`` as no flip published.
+    gamma_flip_status: Optional[str]
     # Strike carrying the largest positive net GEX (dealers most long
     # gamma here — strongest local mean-reversion magnet).
     max_positive_gamma: Optional[float]
@@ -2282,6 +2312,10 @@ class GexResponse(TypedDict, total=False):
     as_of: str
     # Strike where net dealer gamma crosses zero across the chain.
     gamma_flip: Optional[float]
+    # Why ``gamma_flip`` is or isn't published -- ``"available"``, else a
+    # reason code. Same values as ``ExposureSummaryResponse.gamma_flip_status``;
+    # treat anything other than ``"available"`` as no flip published.
+    gamma_flip_status: Optional[str]
     # Net GEX across the chain (dollars per 1% spot move).
     net_gex: Optional[float]
     # Plain-text categorical label for the GEX regime
@@ -2823,6 +2857,15 @@ class FlowLevelsResponse(TypedDict, total=False):
     expiry: Optional[str]
     # Spot where live net dealer gamma crosses zero. ``None`` if no flip.
     live_gamma_flip: Optional[float]
+    # Why ``live_gamma_flip`` is or isn't published. NOTE the asymmetric
+    # name: the value field is ``live_gamma_flip`` but its status field is
+    # plain ``gamma_flip_status`` on the wire -- there is no
+    # ``live_gamma_flip_status``. ``"available"`` when a level is returned;
+    # otherwise a reason code (``"no_boundary"``,
+    # ``"insufficient_local_coverage"``, ...). See
+    # ``ExposureSummaryResponse.gamma_flip_status`` for the full code list;
+    # treat ANY value other than ``"available"`` as no flip published.
+    gamma_flip_status: Optional[str]
     # Strike of the largest live call-gamma concentration (upside magnet).
     live_call_wall: Optional[float]
     # Strike of the largest live put-gamma concentration (downside magnet).
@@ -2959,6 +3002,11 @@ class FlowGexResponse(TypedDict, total=False):
     live_net_gex_label: str
     # Live gamma-flip spot. ``None`` if no sign change.
     live_gamma_flip: Optional[float]
+    # Why ``live_gamma_flip`` is or isn't published -- ``"available"``, else
+    # a reason code. Named ``gamma_flip_status`` (not
+    # ``live_gamma_flip_status``) on the wire; see
+    # ``FlowLevelsResponse.gamma_flip_status``.
+    gamma_flip_status: Optional[str]
     # Per-strike rows (identical schema to settled GEX). See ``GexStrikeRow``.
     strikes: List[GexStrikeRow]
 
@@ -3097,6 +3145,11 @@ class FlowLiveResponse(TypedDict, total=False):
     live_gex_delta: Optional[float]
     # Live gamma-flip spot. ``None`` if no sign change.
     live_gamma_flip: Optional[float]
+    # Why ``live_gamma_flip`` is or isn't published -- ``"available"``, else
+    # a reason code. Named ``gamma_flip_status`` (not
+    # ``live_gamma_flip_status``) on the wire; see
+    # ``FlowLevelsResponse.gamma_flip_status``.
+    gamma_flip_status: Optional[str]
     # Largest live call-gamma concentration strike (upside magnet).
     live_call_wall: Optional[float]
     # Largest live put-gamma concentration strike (downside magnet).
@@ -3698,6 +3751,7 @@ class FlowSignalsChain(TypedDict, total=False):
     put_wall: Optional[float]
     max_pain: Optional[float]
     gamma_flip: Optional[float]
+    gamma_flip_status: Optional[str]
 
 
 class FlowSignalScoreBreakdown(TypedDict, total=False):
@@ -4204,6 +4258,7 @@ class EarningsDealerLevels(TypedDict, total=False):
     """Dealer levels scoped to the event-week expiries."""
 
     gamma_flip: Optional[float]
+    gamma_flip_status: Optional[str]
     call_wall: Optional[float]
     put_wall: Optional[float]
     highest_oi_strike: Optional[float]
@@ -5176,6 +5231,7 @@ class FlowZeroDteSeriesBar(TypedDict, total=False):
     net_gex: Optional[float]
     net_dex: Optional[float]
     gamma_flip: Optional[float]
+    gamma_flip_status: Optional[str]
     call_wall: Optional[float]
     put_wall: Optional[float]
     magnet: Optional[float]
