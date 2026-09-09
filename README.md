@@ -23,13 +23,24 @@ fa = FlashAlpha("YOUR_API_KEY")  # Get a free key at flashalpha.com
 # Gamma exposure by strike
 gex = fa.gex("SPY")
 print(f"Net GEX: ${gex['net_gex']:,.0f}")
-print(f"Gamma flip: {gex['gamma_flip']}")
+# gamma_flip is None unless gamma_flip_status == "available" -- never format it
+# as a number without checking first.
+print(f"Gamma flip: {gex['gamma_flip']} ({gex['gamma_flip_status']})")
 
 for strike in gex["strikes"][:5]:
     print(f"  {strike['strike']}: net ${strike['net_gex']:,.0f}")
 ```
 
 Get your free API key at [flashalpha.com](https://flashalpha.com) — no credit card required.
+
+> **`gamma_flip` is nullable.** A dealer gamma flip is only published when the
+> level is well-determined, which is a minority of chains. When it is withheld,
+> `gamma_flip` is `null`, `regime` is `"unknown"`, and `gamma_flip_status` carries
+> a reason code (`no_boundary`, `insufficient_local_coverage`,
+> `insufficient_quote_quality`, `sensitive_root`, `uncertain_root_path`,
+> `stored_sign_mismatch`, `search_budget`, `quality_budget`). Only
+> `gamma_flip_status == "available"` guarantees a number; treat any other value -
+> including codes added in future - as "no level published".
 
 ## Data provenance: `data_as_of`
 
@@ -148,7 +159,8 @@ chex = fa.chex("NVDA")                                     # Charm exposure
 levels = fa.exposure_levels("SPY")                          # Key levels
 print(f"Call wall: {levels['levels']['call_wall']}")
 print(f"Put wall: {levels['levels']['put_wall']}")
-print(f"Gamma flip: {levels['levels']['gamma_flip']}")
+print(f"Gamma flip: {levels['levels']['gamma_flip']} "
+      f"({levels['levels']['gamma_flip_status']})")
 
 summary = fa.exposure_summary("SPY")                        # Full summary (Growth+)
 narrative = fa.narrative("SPY")                              # AI narrative (Growth+)
