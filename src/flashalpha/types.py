@@ -2857,6 +2857,15 @@ class FlowLevelsResponse(TypedDict, total=False):
     expiry: Optional[str]
     # Spot where live net dealer gamma crosses zero. ``None`` if no flip.
     live_gamma_flip: Optional[float]
+    # Why ``live_gamma_flip`` is or isn't published. NOTE the asymmetric
+    # name: the value field is ``live_gamma_flip`` but its status field is
+    # plain ``gamma_flip_status`` on the wire -- there is no
+    # ``live_gamma_flip_status``. ``"available"`` when a level is returned;
+    # otherwise a reason code (``"no_boundary"``,
+    # ``"insufficient_local_coverage"``, ...). See
+    # ``ExposureSummaryResponse.gamma_flip_status`` for the full code list;
+    # treat ANY value other than ``"available"`` as no flip published.
+    gamma_flip_status: Optional[str]
     # Strike of the largest live call-gamma concentration (upside magnet).
     live_call_wall: Optional[float]
     # Strike of the largest live put-gamma concentration (downside magnet).
@@ -2993,6 +3002,11 @@ class FlowGexResponse(TypedDict, total=False):
     live_net_gex_label: str
     # Live gamma-flip spot. ``None`` if no sign change.
     live_gamma_flip: Optional[float]
+    # Why ``live_gamma_flip`` is or isn't published -- ``"available"``, else
+    # a reason code. Named ``gamma_flip_status`` (not
+    # ``live_gamma_flip_status``) on the wire; see
+    # ``FlowLevelsResponse.gamma_flip_status``.
+    gamma_flip_status: Optional[str]
     # Per-strike rows (identical schema to settled GEX). See ``GexStrikeRow``.
     strikes: List[GexStrikeRow]
 
@@ -3131,6 +3145,11 @@ class FlowLiveResponse(TypedDict, total=False):
     live_gex_delta: Optional[float]
     # Live gamma-flip spot. ``None`` if no sign change.
     live_gamma_flip: Optional[float]
+    # Why ``live_gamma_flip`` is or isn't published -- ``"available"``, else
+    # a reason code. Named ``gamma_flip_status`` (not
+    # ``live_gamma_flip_status``) on the wire; see
+    # ``FlowLevelsResponse.gamma_flip_status``.
+    gamma_flip_status: Optional[str]
     # Largest live call-gamma concentration strike (upside magnet).
     live_call_wall: Optional[float]
     # Largest live put-gamma concentration strike (downside magnet).

@@ -4,6 +4,15 @@ Real-time options exposure analytics. Live gamma (GEX), delta (DEX), vanna (VEX)
 
 > 📖 **Canonical, always-current docs:** https://flashalpha.com/docs · 🔑 [Get a free API key](https://flashalpha.com) · 🧪 [Interactive playground](https://lab.flashalpha.com/swagger)
 
+> ⚠️ **`gamma_flip` is nullable.** A dealer gamma flip is only published when the level
+> is well-determined, which is a minority of chains. When it is withheld, `gamma_flip`
+> (and `live_gamma_flip` on the flow endpoints) is `null`, `regime` is `"unknown"`, and
+> the sibling `gamma_flip_status` string carries the reason code. Only
+> `gamma_flip_status == "available"` guarantees a number — treat every other value,
+> including codes added in future, as "no level published". Note that the flow endpoints
+> pair `live_gamma_flip` with a status field named plainly `gamma_flip_status`, not
+> `live_gamma_flip_status`. The examples below all show the `"available"` case.
+
 ---
 
 ## Playground
@@ -429,6 +438,7 @@ curl "https://lab.flashalpha.com/v1/stock/SPY/summary"
     "net_vex": 1200000000,
     "net_chex": 850000000,
     "gamma_flip": 575.25,
+    "gamma_flip_status": "available",
     "call_wall": 585.0,
     "put_wall": 570.0,
     "max_pain": 578.0,
@@ -489,7 +499,8 @@ curl "https://lab.flashalpha.com/v1/stock/SPY/summary"
 | `volatility.iv_term_structure` | IV at ATM for each active expiration (filtered to 5–200% to exclude bad SVI fits) |
 | `options_flow` | Aggregate OI, volume, and put/call ratios across all active expirations |
 | `exposure.net_gex/dex/vex/chex` | Net gamma/delta/vanna/charm exposure |
-| `exposure.gamma_flip` | Strike where net GEX crosses zero |
+| `exposure.gamma_flip` | Strike where net GEX crosses zero; `null` when no level is published |
+| `exposure.gamma_flip_status` | `"available"` when a level is published, otherwise the reason code it was withheld (`no_boundary`, `insufficient_local_coverage`, `insufficient_quote_quality`, `sensitive_root`, `uncertain_root_path`, `stored_sign_mismatch`, `search_budget`, `quality_budget`). Treat anything other than `"available"` as no level published |
 | `exposure.call_wall` / `put_wall` | Strikes with highest call/put GEX concentration |
 | `exposure.max_pain` | Strike where total option holder loss is maximized |
 | `exposure.highest_oi_strike` | Strike with highest total open interest |
@@ -553,6 +564,7 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
   "underlying_price": 597.505,
   "as_of": "2026-02-28T16:30:45Z",
   "gamma_flip": 595.25,
+  "gamma_flip_status": "available",
   "net_gex": 2850000000,
   "net_gex_label": "positive",
   "strikes": [
@@ -734,6 +746,7 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
   "underlying_price": 597.505,
   "as_of": "2026-02-28T16:30:45Z",
   "gamma_flip": 595.25,
+  "gamma_flip_status": "available",
   "regime": "positive_gamma",
   "exposures": {
     "net_gex": 2850000000,
@@ -802,6 +815,7 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
   "as_of": "2026-02-28T16:30:45Z",
   "levels": {
     "gamma_flip": 595.25,
+    "gamma_flip_status": "available",
     "max_positive_gamma": 600.0,
     "max_negative_gamma": 585.0,
     "call_wall": 600.0,
@@ -816,7 +830,8 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
 
 | Field | Description |
 |-------|-------------|
-| `gamma_flip` | Price where net GEX crosses zero — above = positive gamma, below = negative |
+| `gamma_flip` | Price where net GEX crosses zero — above = positive gamma, below = negative; `null` when no level is published |
+| `gamma_flip_status` | `"available"` when a level is published, otherwise the reason code it was withheld (`no_boundary`, `insufficient_local_coverage`, `insufficient_quote_quality`, `sensitive_root`, `uncertain_root_path`, `stored_sign_mismatch`, `search_budget`, `quality_budget`). Treat anything other than `"available"` as no level published |
 | `call_wall` | Strike with highest call GEX — acts as resistance |
 | `put_wall` | Strike with highest put GEX — acts as support |
 | `max_positive_gamma` | Strike with highest positive net GEX |
@@ -867,6 +882,7 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
       "net_gex_change_pct": 9.6,
       "vix": 18.5,
       "gamma_flip": 595.25,
+      "gamma_flip_status": "available",
       "call_wall": 600.0,
       "put_wall": 595.0,
       "regime": "positive_gamma",
@@ -936,6 +952,7 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
     "label": "positive_gamma",
     "description": "Dealers long gamma — moves dampened, mean reversion likely",
     "gamma_flip": 588.50,
+    "gamma_flip_status": "available",
     "spot_vs_flip": "above",
     "spot_to_flip_pct": 0.33,
     "distance_to_flip_dollars": 1.92,
@@ -1968,6 +1985,7 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
   "underlying_price": 597.50,
   "expiry": "2026-05-15",
   "live_gamma_flip": 595.50,
+  "gamma_flip_status": "available",
   "live_call_wall": 600,
   "live_put_wall": 590,
   "live_max_pain": 595
@@ -2125,6 +2143,7 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
   "live_net_gex": 12500000000,
   "live_net_gex_label": "positive",
   "live_gamma_flip": 595.50,
+  "gamma_flip_status": "available",
   "strikes": [
     {
       "strike": 595.0,
@@ -2355,6 +2374,7 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
   "live_gex": 12500000000,
   "live_gex_delta": -450000000,
   "live_gamma_flip": 595.50,
+  "gamma_flip_status": "available",
   "live_call_wall": 600,
   "live_put_wall": 590,
   "live_max_pain": 595,
@@ -2430,7 +2450,8 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
     "call_wall": 950.0,
     "put_wall": 850.0,
     "max_pain": 900.0,
-    "gamma_flip": 905.0
+    "gamma_flip": 905.0,
+    "gamma_flip_status": "available"
   },
   "count": 1,
   "signals": [
@@ -2648,6 +2669,7 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
       "net_gex": 1842000000,
       "net_dex": 48200000000,
       "gamma_flip": 588.50,            // nullable
+      "gamma_flip_status": "available", // null flip -> reason code
       "call_wall": 595.0,              // nullable
       "put_wall": 585.0,               // nullable
       "magnet": 590.0,                 // nullable
@@ -3374,6 +3396,7 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
     "alignment": "converging",
     "description": "Max pain (545) near gamma flip (546) between walls (538–555) — strong converging magnet.",
     "gamma_flip": 546,
+    "gamma_flip_status": "available",
     "call_wall": 555,
     "put_wall": 538
   },
@@ -3401,7 +3424,8 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
 | `oi_by_strike` | Per-strike OI and volume for calls and puts |
 | `max_pain_by_expiration` | Per-expiry max pain with DTE and total OI. Only present when no `?expiration=` filter. |
 | `dealer_alignment.alignment` | `converging` (max pain near gamma flip, between walls), `moderate` (between walls, far from flip), `diverging` (outside walls), `unknown` (insufficient data) |
-| `dealer_alignment.gamma_flip` | Strike where net GEX crosses zero |
+| `dealer_alignment.gamma_flip` | Strike where net GEX crosses zero; `null` when no level is published |
+| `dealer_alignment.gamma_flip_status` | `"available"` when a level is published, otherwise the reason code it was withheld (`no_boundary`, `insufficient_local_coverage`, `insufficient_quote_quality`, `sensitive_root`, `uncertain_root_path`, `stored_sign_mismatch`, `search_budget`, `quality_budget`). Treat anything other than `"available"` as no level published |
 | `dealer_alignment.call_wall` / `put_wall` | Strikes with highest absolute call/put GEX |
 | `regime` | `positive_gamma` or `negative_gamma` based on spot vs gamma flip |
 | `expected_move.straddle_price` | ATM straddle mid price |
@@ -4122,7 +4146,8 @@ Full Volatility Risk Premium dashboard. Combines live IV/RV/GEX data with histor
 | `regime.gamma` | `string` | `positive_gamma` or `negative_gamma` |
 | `regime.vrp_regime` | `string?` | `harvestable`, `event_only`, `toxic_short_vol`, `cheap_convexity`, or `surface_distorted` |
 | `regime.net_gex` | `number` | Net gamma exposure ($) |
-| `regime.gamma_flip` | `number` | Gamma flip strike |
+| `regime.gamma_flip` | `number?` | Gamma flip strike; `null` when no level is published |
+| `regime.gamma_flip_status` | `string` | `"available"` when a level is published, otherwise the reason code it was withheld (`no_boundary`, `insufficient_local_coverage`, `insufficient_quote_quality`, `sensitive_root`, `uncertain_root_path`, `stored_sign_mismatch`, `search_budget`, `quality_budget`). Treat anything other than `"available"` as no level published |
 | **Strategy Scores** (0-100) | | |
 | `strategy_scores.short_put_spread` | `number` | Short put spread suitability |
 | `strategy_scores.short_strangle` | `number` | Short strangle suitability |
@@ -4422,7 +4447,7 @@ curl "https://lab.flashalpha.com/v1/strategies/expiry-positioning/SPY?expiry=202
 
 Returns the [strategy decision envelope](#strategy-decision-envelope) with strategy-specific `metrics` and `regime`.
 
-**Notable `metrics`:** `max_pain_strike`, `distance_to_pain_pct`, `oi_concentration_score`, `total_open_interest`, `expiry`, `days_to_expiry`, `gamma_flip`, `call_wall`, `put_wall`, `distance_to_flip_pct`, `spot_position_label`, `underlying_price`.
+**Notable `metrics`:** `max_pain_strike`, `distance_to_pain_pct`, `oi_concentration_score`, `total_open_interest`, `expiry`, `days_to_expiry`, `gamma_flip`, `gamma_flip_status`, `call_wall`, `put_wall`, `distance_to_flip_pct`, `spot_position_label`, `underlying_price`.
 
 **`regime` values:** `strong_pin_likely`, `moderate_pin`, `no_pin_setup`.
 
@@ -4460,7 +4485,7 @@ curl "https://lab.flashalpha.com/v1/strategies/zero-dte/SPY" \
 
 Returns the [strategy decision envelope](#strategy-decision-envelope) with strategy-specific `metrics` and `regime`.
 
-**Notable `metrics`:** `max_pain_strike`, `distance_to_pain_pct`, `oi_concentration_score`, `total_open_interest`, `gamma_flip`, `call_wall`, `put_wall`, `distance_to_flip_pct`, `spot_position_label`, `minutes_to_close`, `session_open_spot`, `expected_move_today`, `expected_move_consumed_pct`, `theta_acceleration`, `underlying_price`.
+**Notable `metrics`:** `max_pain_strike`, `distance_to_pain_pct`, `oi_concentration_score`, `total_open_interest`, `gamma_flip`, `gamma_flip_status`, `call_wall`, `put_wall`, `distance_to_flip_pct`, `spot_position_label`, `minutes_to_close`, `session_open_spot`, `expected_move_today`, `expected_move_consumed_pct`, `theta_acceleration`, `underlying_price`.
 
 **`regime` values:** `pin_risk_positive_gamma`, `range_compression`, `trend_risk_or_no_setup`; plus `no_same_day_expiry` / `no_expiry_chain` (returned with `decision: insufficient_data` when no chain exists for the selected expiry).
 
@@ -4496,7 +4521,7 @@ curl "https://lab.flashalpha.com/v1/strategies/dealer-regime/SPY" \
 
 Returns the [strategy decision envelope](#strategy-decision-envelope) with strategy-specific `metrics` and `regime`.
 
-**Notable `metrics`:** `net_gamma`, `net_delta`, `gamma_source`, `gamma_flip`, `call_wall`, `put_wall`, `distance_to_flip_pct`, `spot_position_label`, `net_vex`, `net_chex`, `underlying_price`.
+**Notable `metrics`:** `net_gamma`, `net_delta`, `gamma_source`, `gamma_flip`, `gamma_flip_status`, `call_wall`, `put_wall`, `distance_to_flip_pct`, `spot_position_label`, `net_vex`, `net_chex`, `underlying_price`.
 
 **`regime` values:** `positive_gamma_compression`, `negative_gamma_acceleration`, `transition`.
 
@@ -5099,6 +5124,7 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
   "event_expiry": "2026-06-12",
   "levels": {
     "gamma_flip": 210.0,
+    "gamma_flip_status": "available",
     "call_wall": 220.0,
     "put_wall": 205.0,
     "highest_oi_strike": 215.0
@@ -5122,6 +5148,7 @@ curl -H "X-Api-Key: YOUR_API_KEY" \
 |-------|-------------|
 | `event_expiry` | Closest options expiry on or after the earnings date; null if none found. |
 | `levels.gamma_flip` | Strike where net GEX flips sign (event-week scope); nullable. |
+| `levels.gamma_flip_status` | `"available"` when a level is published, otherwise the reason code it was withheld (`no_boundary`, `insufficient_local_coverage`, `insufficient_quote_quality`, `sensitive_root`, `uncertain_root_path`, `stored_sign_mismatch`, `search_budget`, `quality_budget`). Treat anything other than `"available"` as no level published. |
 | `levels.call_wall` / `put_wall` | Largest positive-GEX strike above / largest below spot; nullable. |
 | `levels.highest_oi_strike` | Strike with the most open interest (event-week scope); nullable. |
 | `gex_by_dte_bucket[]` | Net GEX and contract count for the `pre_event`, `event_week`, and `post_event` expiry buckets (buckets with no contracts are omitted). |
