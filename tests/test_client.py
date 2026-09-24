@@ -1024,7 +1024,7 @@ def test_spot_vol_correlation(fa):
 
 
 @responses.activate
-def test_dispersion(fa):
+def test_dispersion_alt(fa):
     responses.get(f"{BASE}/v1/dispersion", json={"index": "SPX", "constituents": []})
     result = fa.dispersion(index="SPX", symbols=["AAPL", "MSFT", "GOOGL"])
     assert "index" in result
@@ -1046,7 +1046,7 @@ def test_vix_state(fa):
 
 
 @responses.activate
-def test_universe(fa):
+def test_universe_alt(fa):
     responses.get(f"{BASE}/v1/universe", json={"symbols": ["SPY", "QQQ"], "count": 2})
     result = fa.universe()
     assert "symbols" in result
@@ -1234,14 +1234,14 @@ def test_flow_zero_dte_hedge_flow_with_side(fa):
 
 
 @responses.activate
-def test_flow_zero_dte_leaderboard(fa):
+def test_flow_zero_dte_leaderboard_alt(fa):
     responses.get(f"{BASE}/v1/flow/zero-dte/leaderboard", json={"symbols": []})
     result = fa.flow_zero_dte_leaderboard()
     assert "symbols" in result
 
 
 @responses.activate
-def test_flow_zero_dte_leaderboard_with_params(fa):
+def test_flow_zero_dte_leaderboard_with_params_alt(fa):
     responses.get(f"{BASE}/v1/flow/zero-dte/leaderboard", json={"symbols": []})
     fa.flow_zero_dte_leaderboard(metric="heat", n=20)
     url = responses.calls[0].request.url
@@ -1250,7 +1250,7 @@ def test_flow_zero_dte_leaderboard_with_params(fa):
 
 
 @responses.activate
-def test_expected_move(fa):
+def test_expected_move_alt(fa):
     responses.get(f"{BASE}/v1/expected-move/SPY", json={"symbol": "SPY", "move": {}})
     result = fa.expected_move("SPY")
     assert result["symbol"] == "SPY"
@@ -1264,14 +1264,14 @@ def test_expected_move_with_expiry(fa):
 
 
 @responses.activate
-def test_realized_volatility(fa):
+def test_realized_volatility_alt(fa):
     responses.get(f"{BASE}/v1/volatility/realized/SPY", json={"symbol": "SPY", "hv": 0.25})
     result = fa.realized_volatility("SPY")
     assert result["symbol"] == "SPY"
 
 
 @responses.activate
-def test_volatility_forecast(fa):
+def test_volatility_forecast_alt(fa):
     responses.get(f"{BASE}/v1/volatility/forecast/SPY", json={"symbol": "SPY", "forecast": {}})
     result = fa.volatility_forecast("SPY")
     assert result["symbol"] == "SPY"
@@ -1285,7 +1285,7 @@ def test_volatility_forecast_with_dist(fa):
 
 
 @responses.activate
-def test_vrp_history(fa):
+def test_vrp_history_alt(fa):
     responses.get(f"{BASE}/v1/vrp/SPY/history", json={"symbol": "SPY", "history": []})
     result = fa.vrp_history("SPY")
     assert result["symbol"] == "SPY"
@@ -1299,7 +1299,7 @@ def test_vrp_history_with_days(fa):
 
 
 @responses.activate
-def test_earnings_calendar(fa):
+def test_earnings_calendar_alt(fa):
     responses.get(f"{BASE}/v1/earnings/calendar", json={"events": []})
     result = fa.earnings_calendar()
     assert "events" in result
@@ -1364,7 +1364,7 @@ def test_earnings_strategies(fa):
 
 
 @responses.activate
-def test_strategy_flow_anomaly(fa):
+def test_strategy_flow_anomaly_alt(fa):
     responses.get(f"{BASE}/v1/strategies/flow-anomaly/SPY", json={"score": 72, "decision": "candidate"})
     result = fa.strategy_flow_anomaly("SPY")
     assert result["score"] == 72

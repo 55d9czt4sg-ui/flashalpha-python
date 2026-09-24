@@ -7,7 +7,7 @@ help:
 	@echo "  make dev           Install with dev dependencies"
 	@echo "  make test          Run full test suite (unit + integration)"
 	@echo "  make test-unit     Run unit tests only"
-	@echo "  make test-int      Run integration tests only"
+	@echo "  make test-integration  Run integration tests only"
 	@echo "  make coverage      Run tests with coverage report"
 	@echo "  make lint          Run linting checks"
 	@echo "  make format        Format code with black/isort"
@@ -25,7 +25,7 @@ test:
 test-unit:
 	pytest tests/ -v -m "not integration"
 
-test-int:
+test-integration:
 	pytest tests/ -v -m "integration"
 
 coverage:
@@ -34,7 +34,7 @@ coverage:
 
 lint:
 	@echo "Running linting checks..."
-	python -m py_compile src/flashalpha/**/*.py
+	find src/flashalpha -name "*.py" -exec python3 -m py_compile {} +
 	@echo "✓ Syntax check passed"
 
 format:

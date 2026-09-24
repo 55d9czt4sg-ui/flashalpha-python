@@ -4,7 +4,7 @@
 
 ### 1. Activate the Virtual Environment
 ```bash
-cd /Users/billy/copilot-worktrees/flashalpha-python/55d9czt4sg-ui-silver-giggle
+cd <your-local-checkout>
 source venv/bin/activate
 ```
 
