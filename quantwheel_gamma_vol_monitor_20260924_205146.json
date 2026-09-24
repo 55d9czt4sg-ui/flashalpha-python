@@ -1,0 +1,10 @@
+{
+  "sdk_available": false,
+  "symbols": [
+    "SPY",
+    "QQQ"
+  ],
+  "checks": 2,
+  "interval_seconds": 5,
+  "timestamp": "2026-09-24T20:51:46.814485Z"
+}

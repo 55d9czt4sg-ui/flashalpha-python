@@ -1,0 +1,574 @@
+{
+  "SPY": {
+    "snapshots": [
+      {
+        "check": 1,
+        "gamma": {
+          "timestamp": "2026-09-24T13:45:54.368501",
+          "symbol": "SPY",
+          "spot": 563.5,
+          "gamma_flip": 561.0,
+          "gamma_flip_status": "available",
+          "call_wall": 565.25,
+          "put_wall": 562.25,
+          "net_gex": 850000,
+          "dex": -250000,
+          "regime": "long-gamma-bullish",
+          "data_as_of": {
+            "equity_feed": "2026-09-24T13:45:54.368541",
+            "equity_options_feed": "2026-09-24T13:45:54.368544",
+            "flow_feed": "2026-09-24T13:45:54.368545"
+          }
+        },
+        "vol": {
+          "timestamp": "2026-09-24T13:45:54.368548",
+          "symbol": "SPY",
+          "atm_iv": 0.18,
+          "term_structure": {
+            "front_month": 0.18,
+            "next_month": 0.1656,
+            "front_minus_next": 0.0144
+          },
+          "skew": {
+            "put_iv": 0.207,
+            "atm_iv": 0.18,
+            "call_iv": 0.17099999999999999,
+            "put_call_ratio": 1.2105263157894737,
+            "skew_steepness": 0.036000000000000004
+          },
+          "realized_vol": 0.153,
+          "vrp": 0.026999999999999996,
+          "status": "synthetic example data"
+        }
+      },
+      {
+        "check": 2,
+        "gamma": {
+          "timestamp": "2026-09-24T13:45:54.368606",
+          "symbol": "SPY",
+          "spot": 564.0,
+          "gamma_flip": 561.8,
+          "gamma_flip_status": "available",
+          "call_wall": 565.75,
+          "put_wall": 562.75,
+          "net_gex": 720000,
+          "dex": -250000,
+          "regime": "long-gamma-bullish",
+          "data_as_of": {
+            "equity_feed": "2026-09-24T13:45:54.368607",
+            "equity_options_feed": "2026-09-24T13:45:54.368608",
+            "flow_feed": "2026-09-24T13:45:54.368609"
+          }
+        },
+        "vol": {
+          "timestamp": "2026-09-24T13:45:54.368611",
+          "symbol": "SPY",
+          "atm_iv": 0.19440000000000002,
+          "term_structure": {
+            "front_month": 0.19440000000000002,
+            "next_month": 0.17884800000000003,
+            "front_minus_next": 0.015552000000000002
+          },
+          "skew": {
+            "put_iv": 0.21239999999999998,
+            "atm_iv": 0.19440000000000002,
+            "call_iv": 0.1764,
+            "put_call_ratio": 1.204081632653061,
+            "skew_steepness": 0.035999999999999976
+          },
+          "realized_vol": 0.153,
+          "vrp": 0.04140000000000002,
+          "status": "synthetic example data"
+        }
+      },
+      {
+        "check": 3,
+        "gamma": {
+          "timestamp": "2026-09-24T13:45:54.368644",
+          "symbol": "SPY",
+          "spot": 564.5,
+          "gamma_flip": 562.7,
+          "gamma_flip_status": "available",
+          "call_wall": 566.25,
+          "put_wall": 563.25,
+          "net_gex": -380000,
+          "dex": -250000,
+          "regime": "short-gamma-bearish",
+          "data_as_of": {
+            "equity_feed": "2026-09-24T13:45:54.368645",
+            "equity_options_feed": "2026-09-24T13:45:54.368646",
+            "flow_feed": "2026-09-24T13:45:54.368647"
+          }
+        },
+        "vol": {
+          "timestamp": "2026-09-24T13:45:54.368649",
+          "symbol": "SPY",
+          "atm_iv": 0.22499999999999998,
+          "term_structure": {
+            "front_month": 0.22499999999999998,
+            "next_month": 0.207,
+            "front_minus_next": 0.018
+          },
+          "skew": {
+            "put_iv": 0.243,
+            "atm_iv": 0.22499999999999998,
+            "call_iv": 0.189,
+            "put_call_ratio": 1.2857142857142856,
+            "skew_steepness": 0.05399999999999999
+          },
+          "realized_vol": 0.153,
+          "vrp": 0.07199999999999998,
+          "status": "synthetic example data"
+        }
+      },
+      {
+        "check": 4,
+        "gamma": {
+          "timestamp": "2026-09-24T13:45:54.368808",
+          "symbol": "SPY",
+          "spot": 565.0,
+          "gamma_flip": 563.5,
+          "gamma_flip_status": "available",
+          "call_wall": 566.75,
+          "put_wall": 563.75,
+          "net_gex": -420000,
+          "dex": -250000,
+          "regime": "short-gamma-bearish",
+          "data_as_of": {
+            "equity_feed": "2026-09-24T13:45:54.368809",
+            "equity_options_feed": "2026-09-24T13:45:54.368810",
+            "flow_feed": "2026-09-24T13:45:54.368811"
+          }
+        },
+        "vol": {
+          "timestamp": "2026-09-24T13:45:54.368813",
+          "symbol": "SPY",
+          "atm_iv": 0.216,
+          "term_structure": {
+            "front_month": 0.216,
+            "next_month": 0.19872,
+            "front_minus_next": 0.01728
+          },
+          "skew": {
+            "put_iv": 0.2376,
+            "atm_iv": 0.216,
+            "call_iv": 0.18359999999999999,
+            "put_call_ratio": 1.2941176470588236,
+            "skew_steepness": 0.05400000000000002
+          },
+          "realized_vol": 0.153,
+          "vrp": 0.063,
+          "status": "synthetic example data"
+        }
+      }
+    ],
+    "all_signals": [
+      {
+        "type": "CALL_WALL_SHORT_SKEW",
+        "severity": "HIGH",
+        "timestamp": "2026-09-24T13:45:54.368552",
+        "description": "Price $563.50 near call wall $565.25; calls are cheap vs ATM",
+        "implication": [
+          "Dealer supply at $565.25 (OI concentration)",
+          "Call IV $0.17 < ATM IV $0.18 = vol already priced",
+          "Low risk premium for upside; dealer protecting seller"
+        ],
+        "setup": "Price rejection at wall likely. Watch for dealer-driven pullback."
+      },
+      {
+        "type": "PUT_WALL_LONG_SKEW",
+        "severity": "HIGH",
+        "timestamp": "2026-09-24T13:45:54.368559",
+        "description": "Price $563.50 near put wall $562.25; puts premium elevated",
+        "implication": [
+          "Dealer floor at $562.25",
+          "Put IV $0.21 >> ATM $0.18 = protection demand high",
+          "Risk premium concentrated in downside; vol crush risk on breakout"
+        ],
+        "setup": "If price breaks below wall, watch for put skew collapse."
+      },
+      {
+        "type": "CALL_WALL_SHORT_SKEW",
+        "severity": "HIGH",
+        "timestamp": "2026-09-24T13:45:54.368613",
+        "description": "Price $564.00 near call wall $565.75; calls are cheap vs ATM",
+        "implication": [
+          "Dealer supply at $565.75 (OI concentration)",
+          "Call IV $0.18 < ATM IV $0.19 = vol already priced",
+          "Low risk premium for upside; dealer protecting seller"
+        ],
+        "setup": "Price rejection at wall likely. Watch for dealer-driven pullback."
+      },
+      {
+        "type": "CALL_WALL_SHORT_SKEW",
+        "severity": "HIGH",
+        "timestamp": "2026-09-24T13:45:54.368650",
+        "description": "Price $564.50 near call wall $566.25; calls are cheap vs ATM",
+        "implication": [
+          "Dealer supply at $566.25 (OI concentration)",
+          "Call IV $0.19 < ATM IV $0.22 = vol already priced",
+          "Low risk premium for upside; dealer protecting seller"
+        ],
+        "setup": "Price rejection at wall likely. Watch for dealer-driven pullback."
+      },
+      {
+        "type": "SHORT_GAMMA_IV_EXPANSION",
+        "severity": "CRITICAL",
+        "timestamp": "2026-09-24T13:45:54.368654",
+        "description": "Regime: short-gamma-bearish | IV $0.22 >> RV $0.15",
+        "implication": [
+          "Dealers are SHORT gamma (pro-cyclical hedging)",
+          "IV expanding means dealers are losing on convexity",
+          "Each price move accelerates vol increase = dealer pain"
+        ],
+        "setup": "Expect sharp moves and vol spikes. Dealers may hedge aggressively."
+      },
+      {
+        "type": "SHORT_GAMMA_REGIME",
+        "severity": "CRITICAL",
+        "timestamp": "2026-09-24T13:45:54.368656",
+        "description": "GEX: -380,000 | Regime: SHORT GAMMA",
+        "implication": [
+          "Dealers are NET short gamma",
+          "Market stickiness gone; moves accelerate",
+          "Gamma pin at expiry less likely"
+        ],
+        "setup": "Trade momentum into expiry. Watch for directional runs."
+      },
+      {
+        "type": "CALL_WALL_SHORT_SKEW",
+        "severity": "HIGH",
+        "timestamp": "2026-09-24T13:45:54.368815",
+        "description": "Price $565.00 near call wall $566.75; calls are cheap vs ATM",
+        "implication": [
+          "Dealer supply at $566.75 (OI concentration)",
+          "Call IV $0.18 < ATM IV $0.22 = vol already priced",
+          "Low risk premium for upside; dealer protecting seller"
+        ],
+        "setup": "Price rejection at wall likely. Watch for dealer-driven pullback."
+      },
+      {
+        "type": "SHORT_GAMMA_IV_EXPANSION",
+        "severity": "CRITICAL",
+        "timestamp": "2026-09-24T13:45:54.368818",
+        "description": "Regime: short-gamma-bearish | IV $0.22 >> RV $0.15",
+        "implication": [
+          "Dealers are SHORT gamma (pro-cyclical hedging)",
+          "IV expanding means dealers are losing on convexity",
+          "Each price move accelerates vol increase = dealer pain"
+        ],
+        "setup": "Expect sharp moves and vol spikes. Dealers may hedge aggressively."
+      },
+      {
+        "type": "SHORT_GAMMA_REGIME",
+        "severity": "CRITICAL",
+        "timestamp": "2026-09-24T13:45:54.368819",
+        "description": "GEX: -420,000 | Regime: SHORT GAMMA",
+        "implication": [
+          "Dealers are NET short gamma",
+          "Market stickiness gone; moves accelerate",
+          "Gamma pin at expiry less likely"
+        ],
+        "setup": "Trade momentum into expiry. Watch for directional runs."
+      }
+    ]
+  },
+  "QQQ": {
+    "snapshots": [
+      {
+        "check": 1,
+        "gamma": {
+          "timestamp": "2026-09-24T13:45:54.368566",
+          "symbol": "QQQ",
+          "spot": 428.2,
+          "gamma_flip": 425.7,
+          "gamma_flip_status": "available",
+          "call_wall": 429.95,
+          "put_wall": 426.95,
+          "net_gex": 850000,
+          "dex": -250000,
+          "regime": "long-gamma-bullish",
+          "data_as_of": {
+            "equity_feed": "2026-09-24T13:45:54.368567",
+            "equity_options_feed": "2026-09-24T13:45:54.368568",
+            "flow_feed": "2026-09-24T13:45:54.368569"
+          }
+        },
+        "vol": {
+          "timestamp": "2026-09-24T13:45:54.368571",
+          "symbol": "QQQ",
+          "atm_iv": 0.22,
+          "term_structure": {
+            "front_month": 0.22,
+            "next_month": 0.2024,
+            "front_minus_next": 0.0176
+          },
+          "skew": {
+            "put_iv": 0.253,
+            "atm_iv": 0.22,
+            "call_iv": 0.209,
+            "put_call_ratio": 1.2105263157894737,
+            "skew_steepness": 0.04400000000000001
+          },
+          "realized_vol": 0.187,
+          "vrp": 0.033,
+          "status": "synthetic example data"
+        }
+      },
+      {
+        "check": 2,
+        "gamma": {
+          "timestamp": "2026-09-24T13:45:54.368617",
+          "symbol": "QQQ",
+          "spot": 428.7,
+          "gamma_flip": 426.5,
+          "gamma_flip_status": "available",
+          "call_wall": 430.45,
+          "put_wall": 427.45,
+          "net_gex": 720000,
+          "dex": -250000,
+          "regime": "long-gamma-bullish",
+          "data_as_of": {
+            "equity_feed": "2026-09-24T13:45:54.368618",
+            "equity_options_feed": "2026-09-24T13:45:54.368619",
+            "flow_feed": "2026-09-24T13:45:54.368620"
+          }
+        },
+        "vol": {
+          "timestamp": "2026-09-24T13:45:54.368621",
+          "symbol": "QQQ",
+          "atm_iv": 0.2376,
+          "term_structure": {
+            "front_month": 0.2376,
+            "next_month": 0.218592,
+            "front_minus_next": 0.019008
+          },
+          "skew": {
+            "put_iv": 0.2596,
+            "atm_iv": 0.2376,
+            "call_iv": 0.21559999999999999,
+            "put_call_ratio": 1.2040816326530612,
+            "skew_steepness": 0.04400000000000001
+          },
+          "realized_vol": 0.187,
+          "vrp": 0.050600000000000006,
+          "status": "synthetic example data"
+        }
+      },
+      {
+        "check": 3,
+        "gamma": {
+          "timestamp": "2026-09-24T13:45:54.368661",
+          "symbol": "QQQ",
+          "spot": 429.2,
+          "gamma_flip": 427.4,
+          "gamma_flip_status": "available",
+          "call_wall": 430.95,
+          "put_wall": 427.95,
+          "net_gex": -380000,
+          "dex": -250000,
+          "regime": "short-gamma-bearish",
+          "data_as_of": {
+            "equity_feed": "2026-09-24T13:45:54.368662",
+            "equity_options_feed": "2026-09-24T13:45:54.368663",
+            "flow_feed": "2026-09-24T13:45:54.368664"
+          }
+        },
+        "vol": {
+          "timestamp": "2026-09-24T13:45:54.368665",
+          "symbol": "QQQ",
+          "atm_iv": 0.275,
+          "term_structure": {
+            "front_month": 0.275,
+            "next_month": 0.25300000000000006,
+            "front_minus_next": 0.022000000000000002
+          },
+          "skew": {
+            "put_iv": 0.29700000000000004,
+            "atm_iv": 0.275,
+            "call_iv": 0.231,
+            "put_call_ratio": 1.2857142857142858,
+            "skew_steepness": 0.06600000000000003
+          },
+          "realized_vol": 0.187,
+          "vrp": 0.08800000000000002,
+          "status": "synthetic example data"
+        }
+      },
+      {
+        "check": 4,
+        "gamma": {
+          "timestamp": "2026-09-24T13:45:54.368822",
+          "symbol": "QQQ",
+          "spot": 429.7,
+          "gamma_flip": 428.2,
+          "gamma_flip_status": "available",
+          "call_wall": 431.45,
+          "put_wall": 428.45,
+          "net_gex": -420000,
+          "dex": -250000,
+          "regime": "short-gamma-bearish",
+          "data_as_of": {
+            "equity_feed": "2026-09-24T13:45:54.368823",
+            "equity_options_feed": "2026-09-24T13:45:54.368823",
+            "flow_feed": "2026-09-24T13:45:54.368824"
+          }
+        },
+        "vol": {
+          "timestamp": "2026-09-24T13:45:54.368826",
+          "symbol": "QQQ",
+          "atm_iv": 0.264,
+          "term_structure": {
+            "front_month": 0.264,
+            "next_month": 0.24288,
+            "front_minus_next": 0.02112
+          },
+          "skew": {
+            "put_iv": 0.2904,
+            "atm_iv": 0.264,
+            "call_iv": 0.22440000000000002,
+            "put_call_ratio": 1.2941176470588234,
+            "skew_steepness": 0.06599999999999998
+          },
+          "realized_vol": 0.187,
+          "vrp": 0.07700000000000001,
+          "status": "synthetic example data"
+        }
+      }
+    ],
+    "all_signals": [
+      {
+        "type": "CALL_WALL_SHORT_SKEW",
+        "severity": "HIGH",
+        "timestamp": "2026-09-24T13:45:54.368575",
+        "description": "Price $428.20 near call wall $429.95; calls are cheap vs ATM",
+        "implication": [
+          "Dealer supply at $429.95 (OI concentration)",
+          "Call IV $0.21 < ATM IV $0.22 = vol already priced",
+          "Low risk premium for upside; dealer protecting seller"
+        ],
+        "setup": "Price rejection at wall likely. Watch for dealer-driven pullback."
+      },
+      {
+        "type": "PUT_WALL_LONG_SKEW",
+        "severity": "HIGH",
+        "timestamp": "2026-09-24T13:45:54.368577",
+        "description": "Price $428.20 near put wall $426.95; puts premium elevated",
+        "implication": [
+          "Dealer floor at $426.95",
+          "Put IV $0.25 >> ATM $0.22 = protection demand high",
+          "Risk premium concentrated in downside; vol crush risk on breakout"
+        ],
+        "setup": "If price breaks below wall, watch for put skew collapse."
+      },
+      {
+        "type": "CALL_WALL_SHORT_SKEW",
+        "severity": "HIGH",
+        "timestamp": "2026-09-24T13:45:54.368625",
+        "description": "Price $428.70 near call wall $430.45; calls are cheap vs ATM",
+        "implication": [
+          "Dealer supply at $430.45 (OI concentration)",
+          "Call IV $0.22 < ATM IV $0.24 = vol already priced",
+          "Low risk premium for upside; dealer protecting seller"
+        ],
+        "setup": "Price rejection at wall likely. Watch for dealer-driven pullback."
+      },
+      {
+        "type": "CALL_WALL_SHORT_SKEW",
+        "severity": "HIGH",
+        "timestamp": "2026-09-24T13:45:54.368667",
+        "description": "Price $429.20 near call wall $430.95; calls are cheap vs ATM",
+        "implication": [
+          "Dealer supply at $430.95 (OI concentration)",
+          "Call IV $0.23 < ATM IV $0.28 = vol already priced",
+          "Low risk premium for upside; dealer protecting seller"
+        ],
+        "setup": "Price rejection at wall likely. Watch for dealer-driven pullback."
+      },
+      {
+        "type": "SHORT_GAMMA_IV_EXPANSION",
+        "severity": "CRITICAL",
+        "timestamp": "2026-09-24T13:45:54.368670",
+        "description": "Regime: short-gamma-bearish | IV $0.28 >> RV $0.19",
+        "implication": [
+          "Dealers are SHORT gamma (pro-cyclical hedging)",
+          "IV expanding means dealers are losing on convexity",
+          "Each price move accelerates vol increase = dealer pain"
+        ],
+        "setup": "Expect sharp moves and vol spikes. Dealers may hedge aggressively."
+      },
+      {
+        "type": "SHORT_GAMMA_REGIME",
+        "severity": "CRITICAL",
+        "timestamp": "2026-09-24T13:45:54.368672",
+        "description": "GEX: -380,000 | Regime: SHORT GAMMA",
+        "implication": [
+          "Dealers are NET short gamma",
+          "Market stickiness gone; moves accelerate",
+          "Gamma pin at expiry less likely"
+        ],
+        "setup": "Trade momentum into expiry. Watch for directional runs."
+      },
+      {
+        "type": "POSITIVE_VRP_HIGH_ATM",
+        "severity": "MEDIUM",
+        "timestamp": "2026-09-24T13:45:54.368673",
+        "description": "VRP: $0.0880 (IV > RV) | ATM IV: $0.28",
+        "implication": [
+          "Volatility risk premium positive = selling vol is rewarded",
+          "Implied vol elevated vs realized = mean reversion candidate",
+          "If IV came from put demand (skew), short vol is directional hedge"
+        ],
+        "setup": "Short vol strategies gain. Monitor for crush into lower realized."
+      },
+      {
+        "type": "CALL_WALL_SHORT_SKEW",
+        "severity": "HIGH",
+        "timestamp": "2026-09-24T13:45:54.368827",
+        "description": "Price $429.70 near call wall $431.45; calls are cheap vs ATM",
+        "implication": [
+          "Dealer supply at $431.45 (OI concentration)",
+          "Call IV $0.22 < ATM IV $0.26 = vol already priced",
+          "Low risk premium for upside; dealer protecting seller"
+        ],
+        "setup": "Price rejection at wall likely. Watch for dealer-driven pullback."
+      },
+      {
+        "type": "SHORT_GAMMA_IV_EXPANSION",
+        "severity": "CRITICAL",
+        "timestamp": "2026-09-24T13:45:54.368829",
+        "description": "Regime: short-gamma-bearish | IV $0.26 >> RV $0.19",
+        "implication": [
+          "Dealers are SHORT gamma (pro-cyclical hedging)",
+          "IV expanding means dealers are losing on convexity",
+          "Each price move accelerates vol increase = dealer pain"
+        ],
+        "setup": "Expect sharp moves and vol spikes. Dealers may hedge aggressively."
+      },
+      {
+        "type": "SHORT_GAMMA_REGIME",
+        "severity": "CRITICAL",
+        "timestamp": "2026-09-24T13:45:54.368831",
+        "description": "GEX: -420,000 | Regime: SHORT GAMMA",
+        "implication": [
+          "Dealers are NET short gamma",
+          "Market stickiness gone; moves accelerate",
+          "Gamma pin at expiry less likely"
+        ],
+        "setup": "Trade momentum into expiry. Watch for directional runs."
+      },
+      {
+        "type": "POSITIVE_VRP_HIGH_ATM",
+        "severity": "MEDIUM",
+        "timestamp": "2026-09-24T13:45:54.368832",
+        "description": "VRP: $0.0770 (IV > RV) | ATM IV: $0.26",
+        "implication": [
+          "Volatility risk premium positive = selling vol is rewarded",
+          "Implied vol elevated vs realized = mean reversion candidate",
+          "If IV came from put demand (skew), short vol is directional hedge"
+        ],
+        "setup": "Short vol strategies gain. Monitor for crush into lower realized."
+      }
+    ]
+  }
+}

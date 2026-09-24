@@ -25,13 +25,21 @@ from dataclasses import dataclass, asdict
 from enum import Enum
 
 # Try to import quantwheel SDK
+QUANTWHEEL_AVAILABLE = False
 try:
-    import quantwheel
+    from quantwheel import QuantWheel
     QUANTWHEEL_AVAILABLE = True
 except ImportError:
-    QUANTWHEEL_AVAILABLE = False
-    print("⚠️  quantwheel SDK not installed yet")
-    print("   Once available, this script will use it for complete gamma analytics")
+    try:
+        from quantwheel_mock import QuantWheel
+        QUANTWHEEL_AVAILABLE = True
+        USING_MOCK = True
+        print("ℹ️  Using QuantWheel mock SDK (real SDK not yet installed)")
+        print("   Once installed, will seamlessly use real API")
+    except ImportError:
+        USING_MOCK = False
+        print("⚠️  quantwheel SDK not installed yet")
+        print("   Once available, this script will use it for complete gamma analytics")
 
 
 class SignalSeverity(Enum):
@@ -112,7 +120,7 @@ class QuantWheelMonitor:
         
         try:
             # Initialize with your API key
-            client = quantwheel.QuantWheel(api_key=self.api_key)
+            client = QuantWheel(api_key=self.api_key)
             print(f"✅ QuantWheel client initialized")
             return client
         except Exception as e:
@@ -172,25 +180,27 @@ class QuantWheelMonitor:
             
             surface = result.get("surface", {})
             skew = result.get("skew", {})
+            term = result.get("term", {})
+            vrp = result.get("vrp", {})
             dist = result.get("distribution", {})
             
             return VolSnapshot(
                 symbol=symbol,
                 spot=result.get("spot"),
                 atm_iv=surface.get("atm_iv"),
-                hv_20=surface.get("hv_20d"),
-                hv_60=surface.get("hv_60d"),
-                hv_252=surface.get("hv_252d"),
-                front_month_iv=surface.get("front_month_iv"),
-                next_month_iv=surface.get("next_month_iv"),
-                term_structure_slope=surface.get("term_slope"),
-                put_iv_25d=skew.get("put_iv_25d"),
-                atm_iv_level=skew.get("atm_iv"),
-                call_iv_25d=skew.get("call_iv_25d"),
-                put_call_iv_ratio=skew.get("put_call_iv_ratio"),
-                vrp=result.get("vrp"),
+                hv_20=surface.get("historical_vol"),
+                hv_60=None,
+                hv_252=None,
+                front_month_iv=term.get("front_iv"),
+                next_month_iv=term.get("back_iv"),
+                term_structure_slope=term.get("term_slope"),
+                put_iv_25d=skew.get("put_iv"),
+                atm_iv_level=skew.get("call_iv"),
+                call_iv_25d=skew.get("call_iv"),
+                put_call_iv_ratio=skew.get("put_call_ratio"),
+                vrp=vrp.get("vrp_level"),
                 skew_premium=dist.get("skew_premium"),
-                tail_risk=dist.get("tail_risk_score"),
+                tail_risk=dist.get("kurtosis"),
                 timestamp=datetime.utcnow().isoformat() + "Z",
                 data_as_of=result.get("data_as_of", {})
             )
