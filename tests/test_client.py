@@ -944,3 +944,490 @@ def test_custom_base_url():
 def test_custom_timeout():
     fa = FlashAlpha("key", timeout=10)
     assert fa.timeout == 10
+
+
+# ── Additional endpoint coverage (Growth+ / Alpha+) ──────────────────
+
+
+@responses.activate
+def test_exposure_sheet(fa):
+    responses.get(f"{BASE}/v1/exposure/sheet/SPY", json={"symbol": "SPY", "exposure": {}})
+    result = fa.exposure_sheet("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_exposure_sheet_with_filters(fa):
+    responses.get(f"{BASE}/v1/exposure/sheet/SPY", json={"symbol": "SPY"})
+    fa.exposure_sheet("SPY", expiration="2026-07-17", min_oi=100)
+    url = responses.calls[0].request.url
+    assert "expiration=2026-07-17" in url
+    assert "min_oi=100" in url
+
+
+@responses.activate
+def test_exposure_term_structure(fa):
+    responses.get(f"{BASE}/v1/exposure/term-structure/SPY", json={"symbol": "SPY", "dte_buckets": []})
+    result = fa.exposure_term_structure("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_exposure_basket_list(fa):
+    responses.get(f"{BASE}/v1/exposure/basket", json={"symbols": ["SPY", "QQQ"], "aggregate": {}})
+    result = fa.exposure_basket(["SPY", "QQQ"])
+    url = responses.calls[0].request.url
+    assert "symbols=SPY%2CQQQ" in url or "symbols=SPY,QQQ" in url
+
+
+@responses.activate
+def test_exposure_basket_with_weights(fa):
+    responses.get(f"{BASE}/v1/exposure/basket", json={"symbols": ["SPY", "QQQ"], "weights": [0.6, 0.4]})
+    result = fa.exposure_basket(["SPY", "QQQ"], weights=[0.6, 0.4])
+    url = responses.calls[0].request.url
+    assert "weights=" in url
+
+
+@responses.activate
+def test_exposure_oi_diff(fa):
+    responses.get(f"{BASE}/v1/exposure/oi-diff/SPY", json={"symbol": "SPY", "changes": []})
+    result = fa.exposure_oi_diff("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_exposure_oi_diff_with_top_n(fa):
+    responses.get(f"{BASE}/v1/exposure/oi-diff/SPY", json={"symbol": "SPY", "top_n": 10})
+    fa.exposure_oi_diff("SPY", top_n=10)
+    assert "topN=10" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_liquidity(fa):
+    responses.get(f"{BASE}/v1/liquidity/SPY", json={"symbol": "SPY", "bid_ask_spread": 0.01})
+    result = fa.liquidity("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_skew_term(fa):
+    responses.get(f"{BASE}/v1/volatility/skew-term/SPY", json={"symbol": "SPY", "term": []})
+    result = fa.skew_term("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_spot_vol_correlation(fa):
+    responses.get(f"{BASE}/v1/volatility/spot-vol-correlation/SPY", json={"symbol": "SPY", "correlation": 0.0})
+    result = fa.spot_vol_correlation("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_dispersion(fa):
+    responses.get(f"{BASE}/v1/dispersion", json={"index": "SPX", "constituents": []})
+    result = fa.dispersion(index="SPX", symbols=["AAPL", "MSFT", "GOOGL"])
+    assert "index" in result
+
+
+@responses.activate
+def test_dispersion_with_weights(fa):
+    responses.get(f"{BASE}/v1/dispersion", json={"index": "SPX"})
+    fa.dispersion(index="SPX", symbols="AAPL,MSFT", weights=[0.6, 0.4])
+    url = responses.calls[0].request.url
+    assert "weights=" in url
+
+
+@responses.activate
+def test_vix_state(fa):
+    responses.get(f"{BASE}/v1/macro/vix-state", json={"vix": 20.0, "regime": "normal"})
+    result = fa.vix_state()
+    assert "vix" in result
+
+
+@responses.activate
+def test_universe(fa):
+    responses.get(f"{BASE}/v1/universe", json={"symbols": ["SPY", "QQQ"], "count": 2})
+    result = fa.universe()
+    assert "symbols" in result
+
+
+@responses.activate
+def test_universe_with_sort_and_limit(fa):
+    responses.get(f"{BASE}/v1/universe", json={"symbols": ["SPY"], "count": 1})
+    fa.universe(sort="gex_exposure", limit=1)
+    url = responses.calls[0].request.url
+    assert "sort=gex_exposure" in url
+    assert "limit=1" in url
+
+
+@responses.activate
+def test_flow_levels(fa):
+    responses.get(f"{BASE}/v1/flow/levels/SPY", json={"symbol": "SPY", "levels": []})
+    result = fa.flow_levels("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_flow_levels_with_expiry(fa):
+    responses.get(f"{BASE}/v1/flow/levels/SPY", json={"symbol": "SPY"})
+    fa.flow_levels("SPY", expiry="2026-06-19")
+    assert "expiry=2026-06-19" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_flow_pin_risk(fa):
+    responses.get(f"{BASE}/v1/flow/pin-risk/SPY", json={"symbol": "SPY", "strikes": []})
+    result = fa.flow_pin_risk("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_flow_pin_risk_with_expiry(fa):
+    responses.get(f"{BASE}/v1/flow/pin-risk/SPY", json={"symbol": "SPY"})
+    fa.flow_pin_risk("SPY", expiry="2026-06-19")
+    assert "expiry=2026-06-19" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_flow_summary(fa):
+    responses.get(f"{BASE}/v1/flow/summary/SPY", json={"symbol": "SPY", "summary": {}})
+    result = fa.flow_summary("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_flow_summary_with_expiry(fa):
+    responses.get(f"{BASE}/v1/flow/summary/SPY", json={"symbol": "SPY"})
+    fa.flow_summary("SPY", expiry="2026-06-19")
+    assert "expiry=2026-06-19" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_flow_oi(fa):
+    responses.get(f"{BASE}/v1/flow/oi/SPY", json={"symbol": "SPY", "oi_flow": {}})
+    result = fa.flow_oi("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_flow_oi_with_expiry(fa):
+    responses.get(f"{BASE}/v1/flow/oi/SPY", json={"symbol": "SPY"})
+    fa.flow_oi("SPY", expiry="2026-06-19")
+    assert "expiry=2026-06-19" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_flow_gex(fa):
+    responses.get(f"{BASE}/v1/flow/gex/SPY", json={"symbol": "SPY", "gex": {}})
+    result = fa.flow_gex("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_flow_gex_with_expiry(fa):
+    responses.get(f"{BASE}/v1/flow/gex/SPY", json={"symbol": "SPY"})
+    fa.flow_gex("SPY", expiry="2026-06-19")
+    assert "expiry=2026-06-19" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_flow_dex(fa):
+    responses.get(f"{BASE}/v1/flow/dex/SPY", json={"symbol": "SPY", "dex": {}})
+    result = fa.flow_dex("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_flow_dex_with_expiry(fa):
+    responses.get(f"{BASE}/v1/flow/dex/SPY", json={"symbol": "SPY"})
+    fa.flow_dex("SPY", expiry="2026-06-19")
+    assert "expiry=2026-06-19" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_flow_dealer_risk(fa):
+    responses.get(f"{BASE}/v1/flow/dealer-risk/SPY", json={"symbol": "SPY", "risk": {}})
+    result = fa.flow_dealer_risk("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_flow_dealer_risk_with_expiry(fa):
+    responses.get(f"{BASE}/v1/flow/dealer-risk/SPY", json={"symbol": "SPY"})
+    fa.flow_dealer_risk("SPY", expiry="2026-06-19")
+    assert "expiry=2026-06-19" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_flow_live(fa):
+    responses.get(f"{BASE}/v1/flow/live/SPY", json={"symbol": "SPY", "live": {}})
+    result = fa.flow_live("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_flow_live_with_expiry(fa):
+    responses.get(f"{BASE}/v1/flow/live/SPY", json={"symbol": "SPY"})
+    fa.flow_live("SPY", expiry="2026-06-19")
+    assert "expiry=2026-06-19" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_flow_zero_dte_heatmap(fa):
+    responses.get(f"{BASE}/v1/flow/zero-dte/heatmap/SPY", json={"symbol": "SPY", "heatmap": []})
+    result = fa.flow_zero_dte_heatmap("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_flow_zero_dte_heatmap_with_metric(fa):
+    responses.get(f"{BASE}/v1/flow/zero-dte/heatmap/SPY", json={"symbol": "SPY"})
+    fa.flow_zero_dte_heatmap("SPY", metric="gex", mode="raw")
+    url = responses.calls[0].request.url
+    assert "metric=gex" in url
+    assert "mode=raw" in url
+
+
+@responses.activate
+def test_flow_zero_dte_series(fa):
+    responses.get(f"{BASE}/v1/flow/zero-dte/series/SPY", json={"symbol": "SPY", "series": []})
+    result = fa.flow_zero_dte_series("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_flow_zero_dte_series_with_bar(fa):
+    responses.get(f"{BASE}/v1/flow/zero-dte/series/SPY", json={"symbol": "SPY"})
+    fa.flow_zero_dte_series("SPY", bar="5m")
+    assert "bar=5m" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_flow_zero_dte_strike_flow(fa):
+    responses.get(f"{BASE}/v1/flow/zero-dte/strike-flow/SPY", json={"symbol": "SPY", "strikes": []})
+    result = fa.flow_zero_dte_strike_flow("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_flow_zero_dte_strike_flow_with_bar(fa):
+    responses.get(f"{BASE}/v1/flow/zero-dte/strike-flow/SPY", json={"symbol": "SPY"})
+    fa.flow_zero_dte_strike_flow("SPY", bar="1m")
+    assert "bar=1m" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_flow_zero_dte_hedge_flow(fa):
+    responses.get(f"{BASE}/v1/flow/zero-dte/hedge-flow/SPY", json={"symbol": "SPY", "flows": []})
+    result = fa.flow_zero_dte_hedge_flow("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_flow_zero_dte_hedge_flow_with_side(fa):
+    responses.get(f"{BASE}/v1/flow/zero-dte/hedge-flow/SPY", json={"symbol": "SPY"})
+    fa.flow_zero_dte_hedge_flow("SPY", side="calls", bar="1m")
+    url = responses.calls[0].request.url
+    assert "side=calls" in url
+    assert "bar=1m" in url
+
+
+@responses.activate
+def test_flow_zero_dte_leaderboard(fa):
+    responses.get(f"{BASE}/v1/flow/zero-dte/leaderboard", json={"symbols": []})
+    result = fa.flow_zero_dte_leaderboard()
+    assert "symbols" in result
+
+
+@responses.activate
+def test_flow_zero_dte_leaderboard_with_params(fa):
+    responses.get(f"{BASE}/v1/flow/zero-dte/leaderboard", json={"symbols": []})
+    fa.flow_zero_dte_leaderboard(metric="heat", n=20)
+    url = responses.calls[0].request.url
+    assert "metric=heat" in url
+    assert "n=20" in url
+
+
+@responses.activate
+def test_expected_move(fa):
+    responses.get(f"{BASE}/v1/expected-move/SPY", json={"symbol": "SPY", "move": {}})
+    result = fa.expected_move("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_expected_move_with_expiry(fa):
+    responses.get(f"{BASE}/v1/expected-move/SPY", json={"symbol": "SPY"})
+    fa.expected_move("SPY", expiry="2026-06-19")
+    assert "expiry=2026-06-19" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_realized_volatility(fa):
+    responses.get(f"{BASE}/v1/volatility/realized/SPY", json={"symbol": "SPY", "hv": 0.25})
+    result = fa.realized_volatility("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_volatility_forecast(fa):
+    responses.get(f"{BASE}/v1/volatility/forecast/SPY", json={"symbol": "SPY", "forecast": {}})
+    result = fa.volatility_forecast("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_volatility_forecast_with_dist(fa):
+    responses.get(f"{BASE}/v1/volatility/forecast/SPY", json={"symbol": "SPY"})
+    fa.volatility_forecast("SPY", dist="gaussian")
+    assert "dist=gaussian" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_vrp_history(fa):
+    responses.get(f"{BASE}/v1/vrp/SPY/history", json={"symbol": "SPY", "history": []})
+    result = fa.vrp_history("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_vrp_history_with_days(fa):
+    responses.get(f"{BASE}/v1/vrp/SPY/history", json={"symbol": "SPY"})
+    fa.vrp_history("SPY", days=30)
+    assert "days=30" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_earnings_calendar(fa):
+    responses.get(f"{BASE}/v1/earnings/calendar", json={"events": []})
+    result = fa.earnings_calendar()
+    assert "events" in result
+
+
+@responses.activate
+def test_earnings_calendar_with_filters(fa):
+    responses.get(f"{BASE}/v1/earnings/calendar", json={"events": []})
+    fa.earnings_calendar(days=7, importance=2)
+    url = responses.calls[0].request.url
+    assert "days=7" in url
+    assert "importance=2" in url
+
+
+@responses.activate
+def test_earnings_expected_move(fa):
+    responses.get(f"{BASE}/v1/earnings/expected-move/SPY", json={"symbol": "SPY", "move": {}})
+    result = fa.earnings_expected_move("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_earnings_history(fa):
+    responses.get(f"{BASE}/v1/earnings/history/SPY", json={"symbol": "SPY", "history": []})
+    result = fa.earnings_history("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_earnings_history_with_limit(fa):
+    responses.get(f"{BASE}/v1/earnings/history/SPY", json={"symbol": "SPY"})
+    fa.earnings_history("SPY", limit=10)
+    assert "limit=10" in responses.calls[0].request.url
+
+
+@responses.activate
+def test_earnings_iv_crush(fa):
+    responses.get(f"{BASE}/v1/earnings/iv-crush/SPY", json={"symbol": "SPY", "crush": {}})
+    result = fa.earnings_iv_crush("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_earnings_vrp(fa):
+    responses.get(f"{BASE}/v1/earnings/vrp/SPY", json={"symbol": "SPY", "vrp": {}})
+    result = fa.earnings_vrp("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_earnings_dealer_positioning(fa):
+    responses.get(f"{BASE}/v1/earnings/dealer-positioning/SPY", json={"symbol": "SPY", "positioning": {}})
+    result = fa.earnings_dealer_positioning("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_earnings_strategies(fa):
+    responses.get(f"{BASE}/v1/earnings/strategies/SPY", json={"symbol": "SPY", "strategies": []})
+    result = fa.earnings_strategies("SPY")
+    assert result["symbol"] == "SPY"
+
+
+@responses.activate
+def test_strategy_flow_anomaly(fa):
+    responses.get(f"{BASE}/v1/strategies/flow-anomaly/SPY", json={"score": 72, "decision": "candidate"})
+    result = fa.strategy_flow_anomaly("SPY")
+    assert result["score"] == 72
+
+
+@responses.activate
+def test_strategy_expiry_positioning(fa):
+    responses.get(f"{BASE}/v1/strategies/expiry-positioning/SPY", json={"score": 65, "decision": "neutral"})
+    result = fa.strategy_expiry_positioning("SPY")
+    assert result["score"] == 65
+
+
+@responses.activate
+def test_strategy_zero_dte(fa):
+    responses.get(f"{BASE}/v1/strategies/zero-dte/SPY", json={"score": 58, "decision": "avoid"})
+    result = fa.strategy_zero_dte("SPY")
+    assert result["score"] == 58
+
+
+@responses.activate
+def test_strategy_dealer_regime(fa):
+    responses.get(f"{BASE}/v1/strategies/dealer-regime/SPY", json={"score": 60, "decision": "candidate"})
+    result = fa.strategy_dealer_regime("SPY")
+    assert result["score"] == 60
+
+
+@responses.activate
+def test_strategy_vol_carry(fa):
+    responses.get(f"{BASE}/v1/strategies/vol-carry/SPY", json={"score": 55, "decision": "neutral"})
+    result = fa.strategy_vol_carry("SPY")
+    assert result["score"] == 55
+
+
+@responses.activate
+def test_strategy_yield_enhancement(fa):
+    responses.get(f"{BASE}/v1/strategies/yield-enhancement/SPY", json={"score": 62, "decision": "candidate"})
+    result = fa.strategy_yield_enhancement("SPY")
+    assert result["score"] == 62
+
+
+@responses.activate
+def test_strategy_surface_anomaly(fa):
+    responses.get(f"{BASE}/v1/strategies/surface-anomaly/SPY", json={"score": 70, "decision": "candidate"})
+    result = fa.strategy_surface_anomaly("SPY")
+    assert result["score"] == 70
+
+
+@responses.activate
+def test_strategy_skew(fa):
+    responses.get(f"{BASE}/v1/strategies/skew/SPY", json={"score": 45, "decision": "avoid"})
+    result = fa.strategy_skew("SPY")
+    assert result["score"] == 45
+
+
+@responses.activate
+def test_strategy_term_structure(fa):
+    responses.get(f"{BASE}/v1/strategies/term-structure/SPY", json={"score": 50, "decision": "neutral"})
+    result = fa.strategy_term_structure("SPY")
+    assert result["score"] == 50
+
+
+@responses.activate
+def test_strategy_tail_pricing(fa):
+    responses.get(f"{BASE}/v1/strategies/tail-pricing/SPY", json={"score": 48, "decision": "avoid"})
+    result = fa.strategy_tail_pricing("SPY")
+    assert result["score"] == 48
