@@ -1,0 +1,100 @@
+{
+  "start_time": "2026-09-24T13:40:54.281204",
+  "symbols": [
+    "SPY"
+  ],
+  "snapshots": [
+    {
+      "symbol": "SPY",
+      "timestamp": "2026-09-24T13:40:54.281231",
+      "spot": 562.45,
+      "gamma_flip": 561.8,
+      "gamma_flip_status": "available",
+      "call_wall": 566.0,
+      "put_wall": 560.0,
+      "net_gex": 1234567,
+      "dex": 89000,
+      "regime": "long-gamma",
+      "data_as_of": "2026-09-24T13:40:54.281232",
+      "phase": "open"
+    },
+    {
+      "symbol": "SPY",
+      "timestamp": "2026-09-24T14:10:54.281234",
+      "spot": 562.6,
+      "gamma_flip": 561.82,
+      "gamma_flip_status": "available",
+      "call_wall": 566.0,
+      "put_wall": 560.0,
+      "net_gex": 1250000,
+      "dex": 91000,
+      "regime": "long-gamma",
+      "data_as_of": "2026-09-24T14:10:54.281238",
+      "phase": "check_1"
+    },
+    {
+      "symbol": "SPY",
+      "timestamp": "2026-09-24T14:40:54.281240",
+      "spot": 562.7,
+      "gamma_flip": 561.32,
+      "gamma_flip_status": "available",
+      "call_wall": 566.0,
+      "put_wall": 560.0,
+      "net_gex": 1100000,
+      "dex": 75000,
+      "regime": "long-gamma",
+      "data_as_of": "2026-09-24T14:40:54.281241",
+      "phase": "check_2",
+      "material_change": {
+        "type": "gamma_flip_move",
+        "from": 561.8,
+        "to": 561.32,
+        "pct_change": -0.085,
+        "reason": "Flip moved 0.48 points (-0.085% of spot). Dealers adjusting hedge exposure."
+      }
+    },
+    {
+      "symbol": "SPY",
+      "timestamp": "2026-09-24T15:10:54.281243",
+      "spot": 563.0,
+      "gamma_flip": 561.3,
+      "gamma_flip_status": "available",
+      "call_wall": 567.0,
+      "put_wall": 560.0,
+      "net_gex": 950000,
+      "dex": 60000,
+      "regime": "long-gamma",
+      "data_as_of": "2026-09-24T15:10:54.281245",
+      "phase": "check_3",
+      "material_change": {
+        "type": "wall_move",
+        "wall": "call_wall",
+        "from": 566.0,
+        "to": 567.0,
+        "strike_increment": 1,
+        "reason": "Call wall moved +1.00 to 567. Dealers pushing supply resistance higher."
+      }
+    }
+  ],
+  "material_changes": [
+    {
+      "check": 2,
+      "timestamp": "2026-09-24T14:40:54.281247",
+      "type": "gamma_flip_move",
+      "description": "Flip dropped from 561.80 to 561.32 (-0.085%)"
+    },
+    {
+      "check": 3,
+      "timestamp": "2026-09-24T15:10:54.281249",
+      "type": "wall_move",
+      "description": "Call wall moved +1 strike to 567.00"
+    }
+  ],
+  "price_action_alerts": [
+    {
+      "check": 3,
+      "timestamp": "2026-09-24T15:10:54.281251",
+      "alert": "Price approaching new call wall at 567.00 \u2014 watch for rejection or breakout"
+    }
+  ]
+}

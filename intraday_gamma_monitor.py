@@ -186,12 +186,12 @@ class GammaMonitor:
             if snap:
                 self.session_data[symbol]["snapshots"].append(snap)
                 print(
-                    f"\n{symbol}:")
-                    f"  Spot: {snap['spot']:.2f}"
-                    f"  Flip: {snap['gamma_flip']:.2f if snap['gamma_flip'] else 'N/A'}"
-                    f"  Walls: Call {snap['call_wall']:.2f} / Put {snap['put_wall']:.2f}"
-                    f"  GEX: {snap['net_gex']:.0f}  DEX: {snap['dex']:.0f}"
-                    f"  Regime: {snap['regime']}"
+                    f"\n{symbol}:\n"
+                    f"  Spot: {snap['spot']:.2f}\n"
+                    f"  Flip: {snap['gamma_flip']:.2f if snap['gamma_flip'] else 'N/A'}\n"
+                    f"  Walls: Call {snap['call_wall']:.2f} / Put {snap['put_wall']:.2f}\n"
+                    f"  GEX: {snap['net_gex']:.0f}  DEX: {snap['dex']:.0f}\n"
+                    f"  Regime: {snap['regime']}\n"
                     f"  Data as of: {snap['data_as_of']}"
                 )
 
